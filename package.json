@@ -1,8 +1,10 @@
 {
-  "name": "nodejs-expressjs-mongodb-boilerplate",
-  "description": "Node.js, Express.js, MongoDB boilerplate",
+  "name": "benm",
+  "description": "Boilerplate for API with Node.js, ExpressJS, and MongoDB",
   "version": "0.0.1",
   "license": "MIT",
+  "bin": "bin/createNodejsApp.js",
+  "main": "app.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/umagol/NodeJs-ExpressJS-MongoDB-Boilerplate"
