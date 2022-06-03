@@ -2,7 +2,12 @@
   "name": "nodejs-expressjs-mongodb-boilerplate",
   "description": "Node.js, Express.js, MongoDB boilerplate",
   "version": "0.0.1",
-  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/umagol/NodeJs-ExpressJS-MongoDB-Boilerplate"
+  },
+  "private": false,
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
