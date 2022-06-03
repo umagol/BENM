@@ -1,5 +1,6 @@
 {
   "name": "nodejs-expressjs-mongodb-boilerplate",
+  "description": "Node.js, Express.js, MongoDB boilerplate",
   "version": "0.0.1",
   "private": true,
   "scripts": {

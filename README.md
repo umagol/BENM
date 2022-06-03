@@ -12,7 +12,7 @@ This project will run on **NodeJs** using **MongoDB** as database. I had tried t
 
 ## Advertise for Job/Work Contract
 
-I am open for a good job or work contract. You can contact me directly on my email ([maitraysuthar@gmail.com](mailto:maitraysuthar@gmail.com "maitraysuthar@gmail.com")) or you can download my CV from my personal [website](https://maitraysuthar.github.io/portfolio/).
+I am open for a good job or work contract. You can contact me directly on my email ([umagol97@gmail.com](mailto:umagol97@gmail.com "umagol97@gmail.com")) or you can download my CV from my personal [website](https://umagol.github.io/).
 
 
 ## Features
@@ -23,7 +23,7 @@ I am open for a good job or work contract. You can contact me directly on my ema
 - JWT Tokens, make requests with a token after login with `Authorization` header with value `Bearer yourToken` where `yourToken` will be returned in Login response.
 - Pre-defined response structures with proper status codes.
 - Included CORS.
-- **Book** example with **CRUD** operations.
+- **Book** && **User** example with **CRUD** operations.
 - Validations added.
 - Included API collection for Postman.
 - Light-weight project.
@@ -44,7 +44,7 @@ I am open for a good job or work contract. You can contact me directly on my ema
 1.  Clone the project from github. Change "myproject" to your project name.
 
 ```bash
-git clone https://github.com/maitraysuthar/rest-api-nodejs-mongodb.git ./myproject
+git clone https://github.com/umagol/NodeJs-ExpressJS-MongoDB-Boilerplate.git ./myproject
 ```
 
 ### Using manual download ZIP
@@ -80,6 +80,8 @@ npm install
 ├── controllers
 │   ├── AuthController.js
 │   └── BookController.js
+├── constants
+│   ├── mailTemplate.js
 ├── models
 │   ├── BookModel.js
 │   └── UserModel.js
@@ -98,6 +100,10 @@ npm install
 │   ├── testConfig.js
 │   ├── auth.js
 │   └── book.js
+├── service
+│   ├── auth.service.js
+├── utility
+│   ├── utility.js
 └── public
     ├── index.html
     └── stylesheets
