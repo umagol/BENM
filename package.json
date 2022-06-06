@@ -1,7 +1,7 @@
 {
   "name": "create-benm-app",
   "description": "Boilerplate for API with Node.js, ExpressJS, and MongoDB",
-  "version": "0.0.1",
+  "version": "0.0.2-0",
   "license": "MIT",
   "bin": {
     "create-benm-app": "bin/CreateBENMApp.js"
