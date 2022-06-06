@@ -1,10 +1,10 @@
 {
-  "name": "benm",
+  "name": "create-benm-app",
   "description": "Boilerplate for API with Node.js, ExpressJS, and MongoDB",
   "version": "0.0.1",
   "license": "MIT",
   "bin": {
-   "create-benm-app": "bin/CreateBENMApp.js"
+    "create-benm-app": "bin/CreateBENMApp.js"
   },
   "main": "app.js",
   "repository": {
