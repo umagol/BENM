@@ -100,21 +100,35 @@ async function setup () {
     fs.unlinkSync( path.join( appPath, 'bin', 'CreateBENMApp.js' ) );
     fs.rmdirSync(path.join(appPath, 'docs'), { recursive: true, force: true });
     fs.rmdirSync(path.join(appPath, '.github'), { recursive: true, force: true });
-    
+
+    // create Package 
+    await runCmd( 'npm pkg delete version_short, license, homepage, bin, main, repository, bugs, keywords' );
+
     if ( !useYarn )
     {
       fs.unlinkSync( path.join( appPath, 'yarn.lock' ) );
     }
 
-    console.log( 'Installation is now complete!' );
+    console.log( `your App is successfully created 🚀🚀` );
     console.log();
 
     console.log( 'We suggest that you start by typing:' );
-    console.log( `    cd ${ folderName }` );
-    console.log( '    npm run dev' );
+
+    console.log( '\x1b[36m%s\x1b[0m', `    cd ${ folderName }` );
+    console.log( `            go to your Project  `);
     console.log();
+
+    console.log( '\x1b[36m%s\x1b[0m', '    npm run dev' );
+    console.log( `            Starts the test runner. `);
+    console.log();
+
+    console.log( '\x1b[36m%s\x1b[0m', '    npm test' );
+    console.log( `            Starts the development server `);
+    console.log();
+    
     console.log( 'Enjoy your production-ready Node.js app, which already supports a large number of ready-made features!' );
     console.log( 'Check README.md for more info.' );
+    console.log(' HappY Hacking  🚀🚀');
   } catch ( error )
   {
     console.log( error );
