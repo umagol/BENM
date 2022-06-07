@@ -17,7 +17,7 @@ async function runCmd ( command ) {
     console.log( error );
   };
 }
-
+// check yarn in installed or not in system
 async function hasYarn () {
   try
   {
@@ -77,13 +77,11 @@ async function setup () {
     // Install dependencies
     const useYarn = await hasYarn();
     console.log( 'Installing dependencies...' );
-    if ( useYarn )
-    {
-      await runCmd( 'yarn install' );
-    } else
-    {
-      await runCmd( 'npm install' );
-    }
+      try {
+        await runCmd( 'npm install' );
+      } catch ( error ) {
+        console.log( error );
+      }
     console.log( 'Dependencies installed successfully.' );
     console.log();
 
@@ -95,14 +93,14 @@ async function setup () {
     await runCmd( 'npx rimraf ./.git' );
 
     // Remove extra files
-    // fs.unlinkSync(path.join(appPath, 'CHANGELOG.md'));
-    // fs.unlinkSync(path.join(appPath, 'CODE_OF_CONDUCT.md'));
+    fs.unlinkSync(path.join(appPath, 'CHANGELOG.md'));
+    fs.unlinkSync(path.join(appPath, 'CODE_OF_CONDUCT.md'));
+    fs.unlinkSync(path.join(appPath, 'CONTRIBUTING.md'));
     fs.unlinkSync(path.join(appPath, 'LICENSE'));
     fs.unlinkSync( path.join( appPath, 'bin', 'CreateBENMApp.js' ) );
-    fs.unlinkSync( path.join( appPath, 'public', 'index.html' ) );
-    // add index.html file to public folder
-    fs.appendFileSync( path.join( appPath, 'public', 'index.html' ), `<h1>welcome to ${folderName} App</h1>` );
-    // fs.rmdirSync(path.join(appPath, 'bin'));
+    fs.rmdirSync(path.join(appPath, 'docs'), { recursive: true, force: true });
+    fs.rmdirSync(path.join(appPath, '.github'), { recursive: true, force: true });
+    
     if ( !useYarn )
     {
       fs.unlinkSync( path.join( appPath, 'yarn.lock' ) );
