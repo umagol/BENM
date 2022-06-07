@@ -98,26 +98,57 @@ async function setup () {
     fs.unlinkSync(path.join(appPath, 'CONTRIBUTING.md'));
     fs.unlinkSync(path.join(appPath, 'LICENSE'));
     fs.unlinkSync( path.join( appPath, 'bin', 'CreateBENMApp.js' ) );
-    fs.unlinkSync( path.join( appPath, 'public', 'index.html' ) );
-    fs.unlinkSync( path.join( appPath, 'public', 'style.css' ) );
-    // add index.html file to public folder
-    fs.appendFileSync( path.join( appPath, 'public', 'index.html' ), `<h1>welcome to ${folderName} App</h1>` );
-    fs.rmdirSync(path.join(appPath, '.github'));
-    
-    if ( !useYarn )
+    fs.rmdirSync(path.join(appPath, 'docs'), { recursive: true, force: true });
+    fs.rmdirSync(path.join(appPath, '.github'), { recursive: true, force: true });
+
+    // check npm version
+    const { stdout, stderr } = await exec( 'npm --version' );
+    const npmVersion = stdout.split( '.' )[ 0 ];
+    if ( npmVersion <= 6 )
     {
-      fs.unlinkSync( path.join( appPath, 'yarn.lock' ) );
+      const packageJson = require( `${appPath}/package.json` );
+      // remove version_short, license, homepage, bin, main field from package.json
+      delete packageJson.version_short;
+      delete packageJson.license;
+      delete packageJson.homepage;
+      delete packageJson.bin;
+      delete packageJson.main;
+      delete packageJson.repository;
+      delete packageJson.bugs;
+      delete packageJson.keywords;
+      packageJson.name = folderName;
+      packageJson.version = '0.0.1';
+      packageJson.description = `${folderName} API `;
+      // write JSON data to package.json
+      fs.writeFileSync( 'package.json', JSON.stringify( packageJson, null, 2 ) );
+    }else{
+      // create Package 
+      await runCmd( 'npm pkg delete version_short, license, homepage, bin, main, repository, bugs, keywords' );
+      await runCmd( 'npm pkg set name ' + folderName );
+      await runCmd( 'npm pkg set version 0.0.1' );
+      await runCmd( 'npm pkg set description ' + folderName + ' API' );
     }
 
-    console.log( 'Installation is now complete!' );
+    console.log( `your App is successfully created 🚀🚀` );
     console.log();
 
     console.log( 'We suggest that you start by typing:' );
-    console.log( `    cd ${ folderName }` );
-    console.log( '    npm run dev' );
+
+    console.log( '\x1b[36m%s\x1b[0m', `    cd ${ folderName }` );
+    console.log( `            go to your Project  `);
     console.log();
+
+    console.log( '\x1b[36m%s\x1b[0m', '    npm run dev' );
+    console.log( `            Starts the test runner. `);
+    console.log();
+
+    console.log( '\x1b[36m%s\x1b[0m', '    npm test' );
+    console.log( `            Starts the development server `);
+    console.log();
+    
     console.log( 'Enjoy your production-ready Node.js app, which already supports a large number of ready-made features!' );
     console.log( 'Check README.md for more info.' );
+    console.log(' HappY Hacking  🚀🚀');
   } catch ( error )
   {
     console.log( error );

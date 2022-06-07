@@ -1,4 +1,4 @@
-const { chai, server, should } = require("./testConfig");
+const { chai, server } = require("./testConfig");
 const BookModel = require("../models/BookModel");
 
 /**
@@ -23,7 +23,7 @@ describe("Book", () => {
 	// Prepare data for testing
 	const userTestData = {
 		"password":"Test@123",
-		"email":"maitraysuthar@test12345.com"
+		"email":"test@test.com"
 	};
 
 	// Prepare data for testing
