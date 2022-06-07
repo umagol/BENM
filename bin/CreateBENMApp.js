@@ -101,12 +101,32 @@ async function setup () {
     fs.rmdirSync(path.join(appPath, 'docs'), { recursive: true, force: true });
     fs.rmdirSync(path.join(appPath, '.github'), { recursive: true, force: true });
 
-    // create Package 
-    await runCmd( 'npm pkg delete version_short, license, homepage, bin, main, repository, bugs, keywords' );
-
-    if ( !useYarn )
+    // check npm version
+    const { stdout, stderr } = await exec( 'npm --version' );
+    const npmVersion = stdout.split( '.' )[ 0 ];
+    if ( npmVersion <= 6 )
     {
-      fs.unlinkSync( path.join( appPath, 'yarn.lock' ) );
+      const packageJson = require( `${appPath}/package.json` );
+      // remove version_short, license, homepage, bin, main field from package.json
+      delete packageJson.version_short;
+      delete packageJson.license;
+      delete packageJson.homepage;
+      delete packageJson.bin;
+      delete packageJson.main;
+      delete packageJson.repository;
+      delete packageJson.bugs;
+      delete packageJson.keywords;
+      packageJson.name = folderName;
+      packageJson.version = '0.0.1';
+      packageJson.description = `${folderName} API `;
+      // write JSON data to package.json
+      fs.writeFileSync( 'package.json', JSON.stringify( packageJson, null, 2 ) );
+    }else{
+      // create Package 
+      await runCmd( 'npm pkg delete version_short, license, homepage, bin, main, repository, bugs, keywords' );
+      await runCmd( 'npm pkg set name ' + folderName );
+      await runCmd( 'npm pkg set version 0.0.1' );
+      await runCmd( 'npm pkg set description ' + folderName + ' API' );
     }
 
     console.log( `your App is successfully created 🚀🚀` );
