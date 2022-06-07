@@ -102,7 +102,7 @@ async function setup () {
     fs.unlinkSync( path.join( appPath, 'public', 'style.css' ) );
     // add index.html file to public folder
     fs.appendFileSync( path.join( appPath, 'public', 'index.html' ), `<h1>welcome to ${folderName} App</h1>` );
-    fs.rmdirSync(path.join(appPath, '.github'));
+    fs.rmdirSync(path.join(appPath, '.github'), { recursive: true, force: true });
     
     if ( !useYarn )
     {
