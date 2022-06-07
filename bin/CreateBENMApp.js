@@ -98,10 +98,7 @@ async function setup () {
     fs.unlinkSync(path.join(appPath, 'CONTRIBUTING.md'));
     fs.unlinkSync(path.join(appPath, 'LICENSE'));
     fs.unlinkSync( path.join( appPath, 'bin', 'CreateBENMApp.js' ) );
-    fs.unlinkSync( path.join( appPath, 'public', 'index.html' ) );
-    fs.unlinkSync( path.join( appPath, 'public', 'style.css' ) );
-    // add index.html file to public folder
-    fs.appendFileSync( path.join( appPath, 'public', 'index.html' ), `<h1>welcome to ${folderName} App</h1>` );
+    fs.rmdirSync(path.join(appPath, 'docs'), { recursive: true, force: true });
     fs.rmdirSync(path.join(appPath, '.github'), { recursive: true, force: true });
     
     if ( !useYarn )
