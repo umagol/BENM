@@ -16,6 +16,9 @@ describe("Book", () => {
 	//Before each test we empty the database
 	before((done) => { 
 		BookModel.deleteMany({}, (err) => { 
+			if(err){
+				console.log(err);
+			}
 			done();           
 		});        
 	});
