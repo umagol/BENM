@@ -1,4 +1,4 @@
-const { chai, server, should } = require("./testConfig");
+const { chai, server } = require("./testConfig");
 const UserModel = require("../models/UserModel");
 
 /**
@@ -15,6 +15,9 @@ describe("Auth", () => {
 	// Before each test we empty the database
 	before((done) => { 
 		UserModel.deleteMany({}, (err) => { 
+			if(err){
+				console.log(err);
+			}
 			done();           
 		});        
 	});

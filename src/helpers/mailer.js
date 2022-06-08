@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-const constant = require("./constants");
 // create reusable transporter object using the default SMTP transport
 let transporter = nodemailer.createTransport({
 	host: process.env.EMAIL_SMTP_HOST,
@@ -24,6 +23,6 @@ exports.send = async function (to, subject, html)
 		});
 		return mailResult;	
 	} catch (error) {
-		return error
+		return error;
 	}
 };

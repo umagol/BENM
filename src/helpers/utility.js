@@ -1,4 +1,4 @@
-const crypto = require('crypto'); // Added in: node v14.17.0
+const crypto = require("crypto"); // Added in: node v14.17.0
 // var base64url = require('base64url');
 
 exports.randomNumber = function (length) {
@@ -12,5 +12,5 @@ exports.randomNumber = function (length) {
 };
 
 exports.createUUID = function () {
-	return crypto.randomBytes(10).toString('hex');
-}
+	return crypto.randomBytes(10).toString("hex");
+};

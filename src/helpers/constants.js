@@ -1,5 +1,5 @@
 exports.otpMailTemplate  = function (otp){
-return`
+	return`
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -855,7 +855,7 @@ ul.social li{
   </center>
 </body>
 </html>`;
-}
+};
 
 exports.forgotPasswordMailTemplate = (link) => {
 	return `<!DOCTYPE html>
@@ -1279,5 +1279,5 @@ exports.forgotPasswordMailTemplate = (link) => {
 	  </center>
 	</body>
 	</html>`;	
-}
+};
 

@@ -30,10 +30,10 @@ exports.register = [
 				if (user) {	
 					if(user.isConfirmed){
 						// User already exists.
-						return Promise.reject({id:0, msg: 'E-mail already in used.'});  
+						return Promise.reject({id:0, msg: "E-mail already in used."});  
 					}else{
 						// Your email is not verified.
-						return Promise.reject({id:1, msg: 'Your Email-id is not verified.'});
+						return Promise.reject({id:1, msg: "Your Email-id is not verified."});
 					}
 				}
 			});
@@ -74,20 +74,20 @@ exports.register = [
 						req.body.email,
 						"Confirm Account",
 						html
-					)
+					);
 					// INFO: why I commented this? because, mail part is very slow and it will take time to send mail.
 					// .then(function(){
-						// Save user.
-						user.save(function (err) {
-							if (err) { return apiResponse.ErrorResponse(res, err); }
-							let userData = {
-								_id: user._id,
-								firstName: user.firstName,
-								lastName: user.lastName,
-								email: user.email
-							};
-							return apiResponse.successResponseWithData(res,"Registration Success.", userData);
-						});
+					// Save user.
+					user.save(function (err) {
+						if (err) { return apiResponse.ErrorResponse(res, err); }
+						let userData = {
+							_id: user._id,
+							firstName: user.firstName,
+							lastName: user.lastName,
+							email: user.email
+						};
+						return apiResponse.successResponseWithData(res,"Registration Success.", userData);
+					});
 					// }).catch(err => {
 					// 	console.log(err);
 					// 	return apiResponse.ErrorResponse(res,err);
@@ -205,7 +205,7 @@ exports.verifyConfirm = [
 									req.body.email,
 									"Your Account is Verified",
 									html
-								)
+								);
 								return apiResponse.successResponse(res,"Account is verified successfully.");
 							}else{
 								return apiResponse.unauthorizedResponse(res, "Invalid OTP.");
@@ -248,7 +248,7 @@ exports.resendConfirmOtp = [
 							// Generate otp
 							let otp = utility.randomNumber(4);
 							// Html email body
-							let html = constant.otpMailTemplate(otp);;
+							let html = constant.otpMailTemplate(otp);
 							// Send confirmation email
 							mailer.send(
 								req.body.email,
@@ -299,10 +299,10 @@ exports.forgotPassword = [
 					if (user) {
 						// Generate otp
 						let ForgotPasswordUUID = utility.createUUID();
-						var host = req.get('host');
-						const link = req.protocol+'://'+host+"/auth/reset-password/"+ForgotPasswordUUID+'/'+user._id;
+						var host = req.get("host");
+						const link = req.protocol+"://"+host+"/auth/reset-password/"+ForgotPasswordUUID+"/"+user._id;
 						// Html email body
-						let html = constant.forgotPasswordMailTemplate(link);;
+						let html = constant.forgotPasswordMailTemplate(link);
 						// Send confirmation email
 						mailer.send(
 							req.body.email,
@@ -356,7 +356,7 @@ exports.resetPassword = [
 					if (user) {
 						bcrypt.hash(req.body.password,10,function(err, hash) {
 							user.password = hash;
-							user.forgotPasswordId = '';
+							user.forgotPasswordId = "";
 							// Save user.
 							user.save(function (err) {
 								if (err) { return apiResponse.ErrorResponse(res, err); }
