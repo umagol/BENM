@@ -1,5 +1,5 @@
 const { chai, server } = require("./testConfig");
-const BookModel = require("../models/BookModel");
+const BookModel = require("../src/models/BookModel");
 
 /**
  * Test cases to test all the book APIs
