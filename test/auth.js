@@ -1,5 +1,5 @@
 const { chai, server } = require("./testConfig");
-const UserModel = require("../models/UserModel");
+const UserModel = require("../src/models/UserModel");
 
 /**
  * Test cases to test all the authentication APIs
@@ -72,7 +72,11 @@ describe("Auth", () => {
 				.send({"email": testData.email,"password": testData.password})
 				.end((err, res) => {
 					res.should.have.status(401);
-					res.body.should.have.property("message").eql("Account is not confirmed. Please confirm your account.");
+					if(res.body.message === "Account is not verified. Please verified your account."){
+						res.body.should.have.property("message").eql("Account is not verified. Please verified your account.");
+					}else{
+						res.body.should.have.property("message").eql("Account is not confirmed. Please confirm your account.");
+					}
 					done();
 				});
 		});

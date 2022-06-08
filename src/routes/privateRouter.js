@@ -1,20 +1,10 @@
 var express = require("express");
-const BookController = require("../controllers/BookController");
-const userController = require("../controllers/UserController");
+const ProductController = require("../controllers/ProductController");
 var router = express.Router();
-const auth = require("../middlewares/jwt");
 
-//End Point Format 
-// pri --> Router Type ( Private )
-// book or user  --> Controller Type
-// get or post or put or delete --> Method
-// --> /api/pri/book/
-
-router.get("/user/get_user_data", auth, userController.getUser);
-
-router.get("/", BookController.bookList);
-router.get("/:id", BookController.bookDetail);
-router.post("/", BookController.bookStore);
-router.put("/:id", BookController.bookUpdate);
-router.delete("/:id", BookController.bookDelete);
+router.get("/get_product_list", ProductController.productList);
+router.get("/get_product_details/:id", ProductController.productDetail);
+router.post("/add_new_product", ProductController.productAdd);
+router.put("/update_product_details/:id", ProductController.productUpdate);
+router.delete("/delete_product/:id", ProductController.productDelete);
 module.exports = router;

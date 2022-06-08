@@ -89,35 +89,36 @@ async function setup () {
 		fs.rmdirSync(path.join(appPath, ".github"), { recursive: true, force: true });
 
 		// check npm version
-		const { stdout, stderr } = await exec( "npm --version" );
-		if(stderr){
-			console.log(" Please install npm version 7.10.0 or Higher");
-		}
-		const npmVersion = stdout.split( "." )[ 0 ];
-		if ( npmVersion <= 6 )
-		{
-			const packageJson = require( `${appPath}/package.json` );
-			// remove version_short, license, homepage, bin, main field from package.json
-			delete packageJson.version_short;
-			delete packageJson.license;
-			delete packageJson.homepage;
-			delete packageJson.bin;
-			delete packageJson.main;
-			delete packageJson.repository;
-			delete packageJson.bugs;
-			delete packageJson.keywords;
-			packageJson.name = folderName;
-			packageJson.version = "0.0.1";
-			packageJson.description = `${folderName} API `;
-			// write JSON data to package.json
-			fs.writeFileSync( "package.json", JSON.stringify( packageJson, null, 2 ) );
-		}else{
-			// create Package 
-			await runCmd( "npm pkg delete version_short, license, homepage, bin, main, repository, bugs, keywords" );
-			await runCmd( "npm pkg set name " + folderName );
-			await runCmd( "npm pkg set version 0.0.1" );
-			await runCmd( "npm pkg set description " + folderName + " API" );
-		}
+// 		const { stdout, stderr } = await exec( "npm --version" );
+// 		if(stderr){
+// 			console.log(" Please install npm version 7.10.0 or Higher");
+// 		}
+// 		const npmVersion = stdout.split( "." )[ 0 ];
+// 		if ( npmVersion <= 6 )
+// 		{
+		// Why I am commting this line because it's not working mac
+		const packageJson = require( `${appPath}/package.json` );
+		// remove version_short, license, homepage, bin, main field from package.json
+		delete packageJson.version_short;
+		delete packageJson.license;
+		delete packageJson.homepage;
+		delete packageJson.bin;
+		delete packageJson.main;
+		delete packageJson.repository;
+		delete packageJson.bugs;
+		delete packageJson.keywords;
+		packageJson.name = folderName;
+		packageJson.version = "0.0.1";
+		packageJson.description = `${folderName} API `;
+		// write JSON data to package.json
+		fs.writeFileSync( "package.json", JSON.stringify( packageJson, null, 2 ) );
+// 		}else{
+// 			// create Package 
+// 			await runCmd( "npm pkg delete version_short, license, homepage, bin, main, repository, bugs, keywords" );
+// 			await runCmd( "npm pkg set name " + folderName );
+// 			await runCmd( "npm pkg set version 0.0.1" );
+// 			await runCmd( "npm pkg set description " + folderName + " API" );
+// 		}
 
 		console.log( "your App is successfully created 🚀🚀" );
 		console.log();
@@ -125,15 +126,15 @@ async function setup () {
 		console.log( "We suggest that you start by typing:" );
 
 		console.log( "\x1b[36m%s\x1b[0m", `    cd ${ folderName }` );
-		console.log( "            go to your Project  ");
+		console.log( "       go to your Project  ");
 		console.log();
 
 		console.log( "\x1b[36m%s\x1b[0m", "    npm run dev" );
-		console.log( "            Starts the test runner. ");
+		console.log( "       Starts the test runner. ");
 		console.log();
 
 		console.log( "\x1b[36m%s\x1b[0m", "    npm test" );
-		console.log( "            Starts the development server ");
+		console.log( "      Starts the development server ");
 		console.log();
     
 		console.log( "Enjoy your production-ready Node.js app, which already supports a large number of ready-made features!" );

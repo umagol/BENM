@@ -1,8 +1,8 @@
 var express = require("express");
-const BookController = require("../controllers/BookController");
+const ProductController = require("../controllers/ProductController");
 
 var router = express.Router();
 
-router.get("/", BookController.bookList);
+router.get("/", ProductController.productList);
 
 module.exports = router;
