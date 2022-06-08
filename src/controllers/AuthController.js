@@ -299,7 +299,8 @@ exports.forgotPassword = [
 					if (user) {
 						// Generate otp
 						let ForgotPasswordUUID = utility.createUUID();
-						const link = process.env.SITE_URL+"/auth/reset-password/"+ForgotPasswordUUID+'/'+user._id;
+						var host = req.get('host');
+						const link = req.protocol+'://'+host+"/auth/reset-password/"+ForgotPasswordUUID+'/'+user._id;
 						// Html email body
 						let html = constant.forgotPasswordMailTemplate(link);;
 						// Send confirmation email
@@ -308,7 +309,6 @@ exports.forgotPassword = [
 							"Forgot Password",
 							html
 						).then(function(){
-							console.log(ForgotPasswordUUID);
 							user.forgotPasswordId = ForgotPasswordUUID;
 							// Save user.
 							user.save(function (err) {
