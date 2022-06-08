@@ -97,7 +97,7 @@ async function setup () {
     fs.unlinkSync(path.join(appPath, 'CODE_OF_CONDUCT.md'));
     fs.unlinkSync(path.join(appPath, 'CONTRIBUTING.md'));
     fs.unlinkSync(path.join(appPath, 'LICENSE'));
-    fs.unlinkSync( path.join( appPath, 'bin', 'CreateBENMApp.js' ) );
+    fs.unlinkSync( path.join( appPath, 'src', 'bin', 'CreateBENMApp.js' ) );
     fs.rmdirSync(path.join(appPath, 'docs'), { recursive: true, force: true });
     fs.rmdirSync(path.join(appPath, '.github'), { recursive: true, force: true });
 

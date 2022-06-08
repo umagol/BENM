@@ -5,7 +5,7 @@ process.env.MONGODB_URL = "mongodb://127.0.0.1:27017/rest-api-nodejs-mongodb-tes
 //Require the dev-dependencies
 let chai = require("chai");
 let chaiHttp = require("chai-http");
-let server = require("../app");
+let server = require("../../app");
 let should = chai.should();
 chai.use(chaiHttp);
 
