@@ -1,12 +1,12 @@
 {
   "name": "create-benm-app",
   "description": "Boilerplate for API with Node.js, ExpressJS, and MongoDB",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "version_short": "0.0",
   "license": "MIT",
   "homepage": "https://satish-umagol.blogspot.com",
   "bin": {
-    "create-benm-app": "./bin/CreateBENMApp.js"
+    "create-benm-app": "./src/bin/CreateBENMApp.js"
   },
   "main": "app.js",
   "repository": {
@@ -25,8 +25,8 @@
     "API boilerplate"
   ],
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www",
+    "start": "node ./src/bin/www",
+    "dev": "nodemon ./src/bin/www",
     "build": "npm install",
     "test": "nyc _mocha --timeout 10000 --exit --report lcovonly -- -R spec",
     "lint": "eslint --fix --config .eslintrc.json \"**/*.js\""
