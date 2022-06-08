@@ -333,9 +333,6 @@ ul.social li{
           <td valign="top" class="bg_white" style="padding: 1em 2.5em 0 2.5em;">
           	<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
           		<tr>
-          			<td class="logo" style="text-align: center;">
-					  <img src="https://devrevel.com/assets/images/logo/logo-dark.png" alt="" style="width: 100px; max-width: 300px; height: auto; margin: auto; display: block;">
-			          </td>
           		</tr>
           	</table>
           </td>
@@ -757,9 +754,6 @@ ul.social li{
           <td valign="top" class="bg_white" style="padding: 1em 2.5em 0 2.5em;">
           	<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
           		<tr>
-          			<td class="logo" style="text-align: center;">
-					  <img src="https://devrevel.com/assets/images/logo/logo-dark.png" alt="" style="width: 100px; max-width: 300px; height: auto; margin: auto; display: block;">
-			          </td>
           		</tr>
           	</table>
           </td>
@@ -776,7 +770,6 @@ ul.social li{
             		<td>
             			<div class="text" style="padding: 0 2.5em; text-align: center;">
             				<h1>
-								to Meet.DevRevel.com 
 								<br>
 								<span>
 									Let's build something great together.
@@ -1191,9 +1184,6 @@ exports.forgotPasswordMailTemplate = (link) => {
 			  <td valign="top" class="bg_white" style="padding: 1em 2.5em 0 2.5em;">
 				  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
 					  <tr>
-						  <td class="logo" style="text-align: center;">
-						  <img src="https://devrevel.com/assets/images/logo/logo-dark.png" alt="" style="width: 100px; max-width: 300px; height: auto; margin: auto; display: block;">
-						  </td>
 					  </tr>
 				  </table>
 			  </td>

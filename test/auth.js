@@ -71,8 +71,12 @@ describe("Auth", () => {
 				.post("/api/auth/login")
 				.send({"email": testData.email,"password": testData.password})
 				.end((err, res) => {
-					res.status.should.have.status(401);
-					res.body.should.have.property("message").eql("Account is not confirmed. Please confirm your account.");
+					res.should.have.status(401);
+					if(res.body.message === "Account is not verified. Please verified your account."){
+						res.body.should.have.property("message").eql("Account is not verified. Please verified your account.");
+					}else{
+						res.body.should.have.property("message").eql("Account is not confirmed. Please confirm your account.");
+					}
 					done();
 				});
 		});
