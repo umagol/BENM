@@ -1,21 +1,21 @@
 const { chai, server } = require("./testConfig");
-const BookModel = require("../src/models/BookModel");
+const ProductModel = require("../src/models/ProductModel");
 
 /**
- * Test cases to test all the book APIs
+ * Test cases to test all the product APIs
  * Covered Routes:
  * (1) Login
- * (2) Store book
- * (3) Get all books
- * (4) Get single book
- * (5) Update book
- * (6) Delete book
+ * (2) Store product
+ * (3) Get all products
+ * (4) Get single product
+ * (5) Update product
+ * (6) Delete product
  */
 
-describe("Book", () => {
+describe("Product", () => {
 	//Before each test we empty the database
 	before((done) => { 
-		BookModel.deleteMany({}, (err) => { 
+		ProductModel.deleteMany({}, (err) => { 
 			if(err){
 				console.log(err);
 			}
@@ -31,8 +31,8 @@ describe("Book", () => {
 
 	// Prepare data for testing
 	const testData = {
-		"title":"testing book",
-		"description":"testing book desc",
+		"title":"testing product",
+		"description":"testing product desc",
 		"isbn":"3214htrff4"
 	};
 
@@ -40,7 +40,7 @@ describe("Book", () => {
   * Test the /POST route
   */
 	describe("/POST Login", () => {
-		it("it should do user Login for book", (done) => {
+		it("it should do user Login for product", (done) => {
 			chai.request(server)
 				.post("/api/auth/login")
 				.send({"email": userTestData.email,"password": userTestData.password})
@@ -56,10 +56,10 @@ describe("Book", () => {
 	/*
   * Test the /POST route
   */
-	describe("/POST Book Store", () => {
-		it("It should send validation error for store book", (done) => {
+	describe("/POST Product Store", () => {
+		it("It should send validation error for store product", (done) => {
 			chai.request(server)
-				.post("/api/book")
+				.post("/api/product")
 				.send()
 				.set("Authorization", "Bearer "+ userTestData.token)
 				.end((err, res) => {
@@ -72,15 +72,15 @@ describe("Book", () => {
 	/*
   * Test the /POST route
   */
-	describe("/POST Book Store", () => {
-		it("It should store book", (done) => {
+	describe("/POST Product Store", () => {
+		it("It should store product", (done) => {
 			chai.request(server)
-				.post("/api/book")
+				.post("/api/product")
 				.send(testData)
 				.set("Authorization", "Bearer "+ userTestData.token)
 				.end((err, res) => {
 					res.should.have.status(200);
-					res.body.should.have.property("message").eql("Book add Success.");
+					res.body.should.have.property("message").eql("Product add Success.");
 					done();
 				});
 		});
@@ -89,10 +89,10 @@ describe("Book", () => {
 	/*
   * Test the /GET route
   */
-	describe("/GET All book", () => {
-		it("it should GET all the books", (done) => {
+	describe("/GET All product", () => {
+		it("it should GET all the products", (done) => {
 			chai.request(server)
-				.get("/api/book")
+				.get("/api/product")
 				.set("Authorization", "Bearer "+ userTestData.token)
 				.end((err, res) => {
 					res.should.have.status(200);
@@ -106,10 +106,10 @@ describe("Book", () => {
 	/*
   * Test the /GET/:id route
   */
-	describe("/GET/:id book", () => {
-		it("it should GET the books", (done) => {
+	describe("/GET/:id product", () => {
+		it("it should GET the products", (done) => {
 			chai.request(server)
-				.get("/api/book/"+testData._id)
+				.get("/api/product/"+testData._id)
 				.set("Authorization", "Bearer "+ userTestData.token)
 				.end((err, res) => {
 					res.should.have.status(200);
@@ -122,15 +122,15 @@ describe("Book", () => {
 	/*
   * Test the /PUT/:id route
   */
-	describe("/PUT/:id book", () => {
-		it("it should PUT the books", (done) => {
+	describe("/PUT/:id product", () => {
+		it("it should PUT the products", (done) => {
 			chai.request(server)
-				.put("/api/book/"+testData._id)
+				.put("/api/product/"+testData._id)
 				.send(testData)
 				.set("Authorization", "Bearer "+ userTestData.token)
 				.end((err, res) => {
 					res.should.have.status(200);
-					res.body.should.have.property("message").eql("Book update Success.");
+					res.body.should.have.property("message").eql("Product update Success.");
 					done();
 				});
 		});
@@ -139,14 +139,14 @@ describe("Book", () => {
 	/*
   * Test the /DELETE/:id route
   */
-	describe("/DELETE/:id book", () => {
-		it("it should DELETE the books", (done) => {
+	describe("/DELETE/:id product", () => {
+		it("it should DELETE the products", (done) => {
 			chai.request(server)
-				.delete("/api/book/"+testData._id)
+				.delete("/api/product/"+testData._id)
 				.set("Authorization", "Bearer "+ userTestData.token)
 				.end((err, res) => {
 					res.should.have.status(200);
-					res.body.should.have.property("message").eql("Book delete Success.");
+					res.body.should.have.property("message").eql("Product delete Success.");
 					done();
 				});
 		});

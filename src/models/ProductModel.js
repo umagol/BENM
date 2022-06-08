@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 
 var Schema = mongoose.Schema;
 
-var BookSchema = new Schema({
+var ProductSchema = new Schema({
 	title: {type: String, required: true},
 	description: {type: String, required: true},
 	userId: {type:  mongoose.Schema.Types.ObjectId, ref: "User", required: true},
@@ -10,4 +10,4 @@ var BookSchema = new Schema({
 	user: { type: Schema.ObjectId, ref: "User", required: true },
 }, {timestamps: true});
 
-module.exports = mongoose.model("Book", BookSchema);
+module.exports = mongoose.model("Product", ProductSchema);

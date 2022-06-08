@@ -4,7 +4,7 @@
   "version": "0.0.5",
   "version_short": "0.0",
   "license": "MIT",
-  "homepage": "https://satish-umagol.blogspot.com",
+  "homepage": "https://umagol.github.io/BENM",
   "bin": {
     "create-benm-app": "./src/bin/CreateBENMApp.js"
   },
