@@ -1,7 +1,7 @@
 {
   "name": "create-benm-app",
   "description": "Boilerplate for API with Node.js, ExpressJS, and MongoDB",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "version_short": "0.0",
   "license": "MIT",
   "homepage": "https://satish-umagol.blogspot.com",
