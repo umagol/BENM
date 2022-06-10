@@ -33,7 +33,7 @@ exports.register = [
 						return Promise.reject({id:0, msg: "E-mail already in used."});  
 					}else{
 						// Your email is not verified.
-						return Promise.reject({id:1, msg: "Your Email-id is not verified."});
+						return Promise.reject({id:1, msg: "Your Email-id is already registered but not verified. Please check your email and verify your account."});
 					}
 				}
 			});
