@@ -3,11 +3,11 @@ const { body,validationResult } = require("express-validator");
 const { check } = require("express-validator");
 //helper file to prepare responses.
 const apiResponse = require("../helpers/apiResponse");
-const utility = require("../helpers/utility");
+const utility = require("../utility/utility");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
-const constant = require("../helpers/constants");
+const constant = require("../constants/mailTemplate");
 /**
  * User registration.
  *

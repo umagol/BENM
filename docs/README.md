@@ -3,7 +3,7 @@
 This project was bootstrapped with [create-benm-app](https://github.com/umagol/BENM).
 
 
-## How to run
+## How to run  🤔
 
 ### Running API server locally
 
