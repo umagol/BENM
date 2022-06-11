@@ -18,7 +18,6 @@ exports.send = async function (to, subject, html)
 			from: process.env.EMAIL_SMTP_USERNAME, // sender address e.g. no-reply@xyz.com or "Fred Foo 👻" <foo@example.com>
 			to: to, // list of receivers e.g. bar@example.com, baz@example.com
 			subject: subject, // Subject line e.g. 'Hello ✔'
-			//text: text, // plain text body e.g. Hello world?
 			html: html // html body e.g. '<b>Hello world?</b>'
 		});
 		return mailResult;	
