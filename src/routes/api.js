@@ -6,7 +6,7 @@ var app = express();
 const authMiddleware = require("../middlewares/jwt");
 
 app.use("/auth/", authRouter);
-app.use("/pubs/", PublicRouter);
+app.use("/pub/", PublicRouter);
 app.use("/pri/", authMiddleware, PrivateRouter);
 
 module.exports = app;
