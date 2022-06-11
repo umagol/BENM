@@ -20,8 +20,9 @@ function ProductData(data) {
  * @returns {Object}
  */
 exports.productList = function (req, res) {
+  const userId = req.query?.userId || req.user._id;
   try {
-    Product.find({ user: req.user._id }, "_id title description isbn createdAt")
+    Product.find({ user: userId }, "_id title description isbn createdAt")
       // Get only selected fields with populate
       .populate("user", "firstName lastName firstTimeLogin email _id")
       .then((products) => {
@@ -38,12 +39,64 @@ exports.productList = function (req, res) {
             []
           );
         }
+      }).catch((err) => {
+        return apiResponse.ErrorResponse(res, err);
       });
   } catch (err) {
     //throw error in json response with status 500.
     return apiResponse.ErrorResponse(res, err);
   }
 };
+
+/**
+ * Get all products.
+ * @param {object} res
+ */
+
+exports.getAllProducts = async function (req, res) {
+  try {
+    // with pagination and sorting
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; 
+    const skip = (page - 1) * limit;
+    const query = {};
+    const options = {
+      skip: skip,
+      limit: limit,
+    };
+    const products = await Product.find(query, "_id title description isbn createdAt")
+      // Get only selected fields with populate
+      .populate("user", "firstName lastName firstTimeLogin email _id")
+      .sort(options.sort)
+      .skip(options.skip)
+      .limit(options.limit);
+    const total = await Product.countDocuments();
+    const totalPages = Math.ceil(total / limit);
+    const meta = {
+      total: total,
+      totalPages: totalPages,
+      page: page,
+      limit: limit,
+    };
+
+    if (products.length > 0) {
+    return apiResponse.successResponseWithData(res, "Operation success", {
+      products: products,
+      meta: meta,
+    });
+    } else {
+      return apiResponse.successResponseWithData(
+        res,
+        "Operation success",
+        []
+      );
+    }
+  } catch (err) {
+    console.log(err);
+    //throw error in json response with status 500.
+    return apiResponse.ErrorResponse(res, err);
+  }
+}
 
 /**
  * Product Detail.

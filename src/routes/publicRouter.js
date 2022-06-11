@@ -3,6 +3,8 @@ const ProductController = require("../controllers/ProductController");
 
 var router = express.Router();
 
-router.get("/", ProductController.productList);
+// these all routers are access to every once
+
+router.get("/get_all_product", ProductController.getAllProducts);
 
 module.exports = router;
