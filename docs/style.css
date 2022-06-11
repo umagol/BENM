@@ -100,7 +100,15 @@ nav,
 section {
     display: block;
 }
-
+.list {
+    list-style: none;
+}
+.style1 {
+    font-size: 12px;
+    font-weight: bold;
+    color: #FFFFFF;
+    font-family: Arial, Helvetica, sans-serif;
+}
 body {
     line-height: 1;
 }
@@ -701,7 +709,7 @@ h1.style2,
 h2.style2,
 h3.style2,
 p.style2 {
-    color: rgba(255, 255, 255, 0.361);
+    color: rgba(255, 255, 255, 0.856);
     font-family: 'Inter', sans-serif;
     letter-spacing: 0.025rem;
     width: calc(100% + 0.025rem);
@@ -1263,10 +1271,11 @@ p.style6 a:hover {
     -ms-justify-content: center;
     justify-content: center;
     background-attachment: fixed;
-    background-image: url('data:image/svg+xml;charset=utf8,%3Csvg%20viewBox%3D%220%200%20512%20512%22%20width%3D%22512%22%20height%3D%22512%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22noise%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.875%22%20result%3D%22noise%22%20%2F%3E%3CfeColorMatrix%20type%3D%22matrix%22%20values%3D%220.1640625%200%200%200%200%200%200.16015625%200%200%200%200%200%200.2890625%200%200%200%200%200%200.34765625%200%22%20%2F%3E%3C%2Ffilter%3E%3Crect%20filter%3D%22url%28%23noise%29%22%20x%3D%220%22%20y%3D%220%22%20width%3D%22512%22%20height%3D%22512%22%20fill%3D%22transparent%22%20opacity%3D%221%22%20%2F%3E%3C%2Fsvg%3E'), linear-gradient(to top, rgba(15, 12, 18, 0.749), rgba(15, 12, 18, 0.749)), url('https://3691413f8d701214.demo.carrd.co/assets/images/container02.svg?v=81f23adc');
-    background-size: 512px, auto, cover;
+    background-image:linear-gradient(rgba(0, 0, 0, 0.627),rgba(0, 0, 0, 1)) , url('https://bs-uploads.toptal.io/blackfish-uploads/components/seo/content/og_image_file/og_image/777184/secure-rest-api-in-nodejs-18f43b3033c239da5d2525cfd9fdc98f.png');
+    background-repeat: no-repeat;
+    background-size: cover;
     background-position: center, 0% 0%, center;
-    background-repeat: repeat, repeat, no-repeat;
+    /* background-repeat: repeat, repeat, no-repeat; */
 }
 
 #container02>.wrapper {
