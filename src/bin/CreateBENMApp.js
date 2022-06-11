@@ -85,9 +85,11 @@ async function setup () {
 		fs.unlinkSync(path.join(appPath, "CONTRIBUTING.md"));
 		fs.unlinkSync(path.join(appPath, "LICENSE"));
 		fs.unlinkSync( path.join( appPath, "src", "bin", "CreateBENMApp.js" ) );
+		// Update README.md
+		fs.copyFileSync(path.join(appPath, "doc", "Readme.md"), path.join(appPath, "README.md"));
 		fs.rmdirSync(path.join(appPath, "docs"), { recursive: true, force: true });
 		fs.rmdirSync(path.join(appPath, ".github"), { recursive: true, force: true });
-
+		
 		// check npm version
 // 		const { stdout, stderr } = await exec( "npm --version" );
 // 		if(stderr){
