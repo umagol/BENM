@@ -10,11 +10,6 @@ This is a basic API skeleton written in JavaScript ES2015. Very useful to buildi
 
 This project will run on **NodeJs** using **MongoDB** as database. I had tried to maintain the code structure easy as any beginner can also adopt the flow and start building an API. Project is open for suggestions, Bug reports and pull requests.
 
-## Advertise for Job/Work Contract
-
-I am open for a good job or work contract. You can contact me directly on my email ([umagol97@gmail.com](mailto:umagol97@gmail.com "umagol97@gmail.com")) or you can download my CV from my personal [website](https://umagol.github.io/).
-
-
 ## Features
 
 - Basic Authentication (Register/Login with hashed password)
@@ -34,12 +29,25 @@ I am open for a good job or work contract. You can contact me directly on my ema
 
 ## Software Requirements
 
-- Node.js **8+**
+- Node.js **12+**  (Recommended **16+**)
+- npm **6+**  (Recommended **8+**)
 - MongoDB **3.6+** (Recommended **4+**)
 
 ## How to install
 
-### Using Git (recommended)
+### Using npm or npx (recommended)
+
+1.  create a BENM app with the npm command. Change "myproject" to your project name.
+
+```bash
+ npx  create-benm-app myproject
+```
+or
+```bash
+ npm init benm-app myproject
+```
+
+### Using Git
 
 1.  Clone the project from github. Change "myproject" to your project name.
 
@@ -49,8 +57,10 @@ git clone https://github.com/umagol/NodeJs-ExpressJS-MongoDB-Boilerplate.git ./m
 
 ### Using manual download ZIP
 
-1.  Download repository
+1.  Download the repository
 2.  Uncompress to your desired directory
+
+**Note**: Remove all unwanted files and folders.
 
 ### Install npm dependencies after installing (Git or manual download)
 
@@ -59,58 +69,57 @@ cd myproject
 npm install
 ```
 
-### Setting up environments
+### Setting up environments  (Git or manual download)
 
-1.  You will find a file named `.env.example` on root directory of project.
+1.  You will find a file named `.env.example` on the project's root directory.
 2.  Create a new file by copying and pasting the file and then renaming it to just `.env`
     ```bash
     cp .env.example .env
     ```
 3.  The file `.env` is already ignored, so you never commit your credentials.
-4.  Change the values of the file to your environment. Helpful comments added to `.env.example` file to understand the constants.
+4.  Change the values of the file to your environment. Helpful comments were added to the `.env.example` file to understand the constants.
+
 
 ## Project structure
 
 ```sh
 .
-├── app.js
-├── package.json
-├── bin
-│   └── www
-├── controllers
-│   ├── AuthController.js
-│   └── ProductController.js
-├── constants
-│   ├── mailTemplate.js
-├── models
-│   ├── ProductModel.js
-│   └── UserModel.js
-├── routes
-│   ├── api.js
-│   ├── auth.js
-│   └── product.js
-├── middlewares
-│   ├── jwt.js
-├── helpers
-│   ├── apiResponse.js
-│   ├── constants.js
-│   ├── mailer.js
-│   └── utility.js
-├── test
-│   ├── testConfig.js
-│   ├── auth.js
-│   └── product.js
-├── service
-│   ├── auth.service.js
-├── utility
-│   ├── utility.js
-└── public
-    ├── index.html
-    └── stylesheets
-        └── style.css
+├── src
+│    ├── bin
+│    │   └── www
+│    ├── controllers
+│    │   ├── AuthController.js
+│    │   └── ProductController.js
+│    ├── constants
+│    │   ├── mailTemplate.js
+│    ├── models
+│    │   ├── ProductModel.js
+│    │   └── UserModel.js
+│    ├── routes
+│    │   ├── api.js
+│    │   ├── auth.js
+│    │   ├── privateRouter.js
+│    │   ├── publicRouter.js
+│    │   └── index.js
+│    ├── middlewares
+│    │   ├── jwt.js
+│    ├── helpers
+│    │   ├── apiResponse.js
+│    │   └── mailer.js
+│    ├── service
+│    │   ├── auth.service.js
+│    └── utility
+│    │   └── utility.js
+│    └── app.js
+│── public
+│    └── index.html
+│── test
+│    ├── auth.js
+│    └── testConfig.js
+└── package.json
 ```
 
-## How to run
+## How to run  🤔
 
 ### Running API server locally
 
@@ -118,28 +127,43 @@ npm install
 npm run dev
 ```
 
-You will know server is running by checking the output of the command `npm run dev`
+You will know the server is running by checking the output of the command `npm run dev`
 
 ```bash
-Connected to mongodb:YOUR_DB_CONNECTION_STRING
-App is running ...
+DataBase connected successfully...
+🚀App is running ... 
 
 Press CTRL + C to stop the process.
 ```
 
-**Note:** `YOUR_DB_CONNECTION_STRING` will be your MongoDB connection string.
+**Note:** Update your MongoDB connection string in `.env` file.
 
-### Creating new models
+### **Creating new controllers**
 
-If you need to add more models to the project just create a new file in `/models/` and use them in the controllers.
+If you need to add more controllers to the project just create a new file in `/src/controllers/` and use them in the routes.
 
-### Creating new routes
 
-If you need to add more routes to the project just create a new file in `/routes/` and add it in `/routes/api.js` it will be loaded dynamically.
+### **Creating new models**
 
-### Creating new controllers
+If you need to add more models to the project just create a new file in `/src/models/` and use them in the controllers.
 
-If you need to add more controllers to the project just create a new file in `/controllers/` and use them in the routes.
+
+### **Creating new routes**
+
+If you need to add more routes to the project there are three types of routes:
+1. private route
+    - The route that requires authentication
+
+    **Note:** we have created auth middleware for checking the user token `Bearer token` require.
+
+2. public route
+    - the route that accesses publicly
+
+
+3. auth route
+    - route related to authentication ( for example login, register, forgot password, etc )
+
+**Notes**: If you need to add more routes to the project just create a new file in `src/routes/` and add it in `/routes/api.js` it will be loaded dynamically.
 
 ## Tests
 
@@ -149,7 +173,7 @@ If you need to add more controllers to the project just create a new file in `/c
 npm test
 ```
 
-You can set custom command for test at `package.json` file inside `scripts` property. You can also change timeout for each assertion with `--timeout` parameter of mocha command.
+You can set a custom command for a test at the `package.json` file inside the `scripts` property. You can also change timeout for each assertion with `--timeout` parameter of mocha command.
 
 ### Creating new tests
 
@@ -163,7 +187,7 @@ If you need to add more test cases to the project just create a new file in `/te
 npm run lint
 ```
 
-You can set custom rules for eslint in `.eslintrc.json` file, Added at project root.
+You can set custom rules for eslint in the `.eslintrc.json` file, Added at the project root.
 
 ## Bugs or improvements
 

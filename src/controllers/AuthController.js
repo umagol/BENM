@@ -3,11 +3,11 @@ const { body,validationResult } = require("express-validator");
 const { check } = require("express-validator");
 //helper file to prepare responses.
 const apiResponse = require("../helpers/apiResponse");
-const utility = require("../helpers/utility");
+const utility = require("../utility/utility");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
-const constant = require("../helpers/constants");
+const constant = require("../constants/mailTemplate");
 /**
  * User registration.
  *
@@ -33,7 +33,7 @@ exports.register = [
 						return Promise.reject({id:0, msg: "E-mail already in used."});  
 					}else{
 						// Your email is not verified.
-						return Promise.reject({id:1, msg: "Your Email-id is not verified."});
+						return Promise.reject({id:1, msg: "Your Email-id is already registered but not verified. Please check your email and verify your account."});
 					}
 				}
 			});
