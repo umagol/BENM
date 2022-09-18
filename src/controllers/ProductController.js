@@ -2,7 +2,6 @@ const Product = require("../models/ProductModel");
 const { body, validationResult } = require("express-validator");
 const { check } = require("express-validator");
 const apiResponse = require("../helpers/apiResponse");
-const auth = require("../middlewares/jwt");
 var mongoose = require("mongoose");
 
 // Product Schema
@@ -52,7 +51,7 @@ exports.productList = async (req, res) => {
  * @param {object} res
  */
 
-exports.getAllProducts = async function (req, res) {
+exports.getAllProducts = async (req, res) => {
 	try {
 		// with pagination and sorting
 		const page = parseInt(req.query.page) || 1;
@@ -92,44 +91,37 @@ exports.getAllProducts = async function (req, res) {
 };
 
 /**
- * Product Detail.
- *
- * @param {string}      id
- *
+ * @description Get product detail by id
+ * @param {string} id
  * @returns {Object}
  */
-exports.productDetail = [
-	auth,
-	function (req, res) {
-		if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-			return apiResponse.successResponseWithData(res, "Operation success", {});
+exports.productDetail = async (req, res) => {
+	const id = req.params.id || '';
+	const userId = req.user._id;
+	try {
+		const product = await Product.findOne(
+			{ _id: id, user: userId },
+			"_id title description isbn createdAt"
+		);
+		if (product !== null) {
+			let productData = new ProductData(product);
+			return apiResponse.successResponseWithData(
+				res,
+				"Operation success",
+				productData
+			);
+		} else {
+			return apiResponse.successResponseWithData(
+				res,
+				"Operation success",
+				{}
+			);
 		}
-		try {
-			Product.findOne(
-				{ _id: req.params.id, user: req.user._id },
-				"_id title description isbn createdAt"
-			).then((product) => {
-				if (product !== null) {
-					let productData = new ProductData(product);
-					return apiResponse.successResponseWithData(
-						res,
-						"Operation success",
-						productData
-					);
-				} else {
-					return apiResponse.successResponseWithData(
-						res,
-						"Operation success",
-						{}
-					);
-				}
-			});
-		} catch (err) {
-			//throw error in json response with status 500.
-			return apiResponse.ErrorResponse(res, err);
-		}
-	},
-];
+	} catch (err) {
+		//throw error in json response with status 500.
+		return apiResponse.ErrorResponse(res, err);
+	}
+};
 
 /**
  * Product store.
