@@ -1,12 +1,13 @@
-# <center> BENM | Boilerplate for API </center>
+# <center> BENM | Boilerplate for REST API </center>
 
-[![Author](https://img.shields.io/badge/author-@umagol-blue.svg)](https://www.linkedin.com/in/satish-umagol/)  [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/b3eb80984adc4671988ffb22d6ad83df)](https://www.codacy.com/manual/maitraysuthar/rest-api-nodejs-mongodb?utm_source=github.com&utm_medium=referral&utm_content=maitraysuthar/rest-api-nodejs-mongodb&utm_campaign=Badge_Coverage) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b3eb80984adc4671988ffb22d6ad83df)](https://www.codacy.com/manual/maitraysuthar/rest-api-nodejs-mongodb?utm_source=github.com&utm_medium=referral&utm_content=maitraysuthar/rest-api-nodejs-mongodb&utm_campaign=Badge_Grade) ![Travis (.com)](https://img.shields.io/travis/com/maitraysuthar/rest-api-nodejs-mongodb)
+![](https://visitor-badge.glitch.me/badge?page_id=umagol.BENM)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/b3eb80984adc4671988ffb22d6ad83df)](https://www.codacy.com/manual/maitraysuthar/rest-api-nodejs-mongodb?utm_source=github.com&utm_medium=referral&utm_content=maitraysuthar/rest-api-nodejs-mongodb&utm_campaign=Badge_Coverage) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b3eb80984adc4671988ffb22d6ad83df)](https://www.codacy.com/manual/maitraysuthar/rest-api-nodejs-mongodb?utm_source=github.com&utm_medium=referral&utm_content=maitraysuthar/rest-api-nodejs-mongodb&utm_campaign=Badge_Grade) ![Travis (.com)](https://img.shields.io/travis/com/maitraysuthar/rest-api-nodejs-mongodb)
 
 A ready-to-use boilerplate for REST API Development with Node.js, Express, and MongoDB
 
 ## Getting started
 
-This is a basic API skeleton written in JavaScript ES2015. Very useful to building a RESTful web APIs for your front-end platforms like Android, iOS or JavaScript frameworks (Angular, Reactjs, etc).
+ This is a basic API skeleton written in JavaScript ES2015. Very useful for building RESTful web APIs for your front-end platforms like Android, iOS or JavaScript frameworks (Angular, ReactJS, etc.).
 
 This project will run on **NodeJs** using **MongoDB** as database. I had tried to maintain the code structure easy as any beginner can also adopt the flow and start building an API. Project is open for suggestions, Bug reports and pull requests.
 
@@ -22,6 +23,7 @@ This project will run on **NodeJs** using **MongoDB** as database. I had tried t
 - Validations added.
 - Included API collection for Postman.
 - Light-weight project.
+- Postman Collection [Link](https://www.postman.com/collections/30604a06ff890ea0180c)
 - Test cases with [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/).
 - Code coverage with [Istanbuljs (nyc)](https://istanbul.js.org/).
 - Included CI (Continuous Integration) with [Travis CI](https://travis-ci.org).

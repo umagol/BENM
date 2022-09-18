@@ -85,17 +85,20 @@ async function setup () {
 		fs.unlinkSync(path.join(appPath, "CONTRIBUTING.md"));
 		fs.unlinkSync(path.join(appPath, "LICENSE"));
 		fs.unlinkSync( path.join( appPath, "src", "bin", "CreateBENMApp.js" ) );
+		// Update README.md
+		fs.unlinkSync(path.join(appPath, "README.md"));
+		fs.copyFileSync(path.join(appPath, "docs", "README.md"), path.join(appPath, "README.md"));
 		fs.rmdirSync(path.join(appPath, "docs"), { recursive: true, force: true });
 		fs.rmdirSync(path.join(appPath, ".github"), { recursive: true, force: true });
-
+		
 		// check npm version
-// 		const { stdout, stderr } = await exec( "npm --version" );
-// 		if(stderr){
-// 			console.log(" Please install npm version 7.10.0 or Higher");
-// 		}
-// 		const npmVersion = stdout.split( "." )[ 0 ];
-// 		if ( npmVersion <= 6 )
-// 		{
+		// 		const { stdout, stderr } = await exec( "npm --version" );
+		// 		if(stderr){
+		// 			console.log(" Please install npm version 7.10.0 or Higher");
+		// 		}
+		// 		const npmVersion = stdout.split( "." )[ 0 ];
+		// 		if ( npmVersion <= 6 )
+		// 		{
 		// Why I am commting this line because it's not working mac
 		const packageJson = require( `${appPath}/package.json` );
 		// remove version_short, license, homepage, bin, main field from package.json
@@ -112,13 +115,13 @@ async function setup () {
 		packageJson.description = `${folderName} API `;
 		// write JSON data to package.json
 		fs.writeFileSync( "package.json", JSON.stringify( packageJson, null, 2 ) );
-// 		}else{
-// 			// create Package 
-// 			await runCmd( "npm pkg delete version_short, license, homepage, bin, main, repository, bugs, keywords" );
-// 			await runCmd( "npm pkg set name " + folderName );
-// 			await runCmd( "npm pkg set version 0.0.1" );
-// 			await runCmd( "npm pkg set description " + folderName + " API" );
-// 		}
+		// 		}else{
+		// 			// create Package 
+		// 			await runCmd( "npm pkg delete version_short, license, homepage, bin, main, repository, bugs, keywords" );
+		// 			await runCmd( "npm pkg set name " + folderName );
+		// 			await runCmd( "npm pkg set version 0.0.1" );
+		// 			await runCmd( "npm pkg set description " + folderName + " API" );
+		// 		}
 
 		console.log( "your App is successfully created 🚀🚀" );
 		console.log();
