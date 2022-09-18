@@ -172,6 +172,7 @@ exports.productAdd = [
 	},
 ];
 
+
 /**
  * @description Update product by id
  * @param {string} title
@@ -180,34 +181,20 @@ exports.productAdd = [
  */
 exports.productUpdate = [
 	body("title", "Title must not be empty.").isLength({ min: 1 }).trim(),
-	body("description", "Description must not be empty.")
-		.isLength({ min: 1 })
-		.trim(),
-	body("isbn", "ISBN must not be empty")
-		.isLength({ min: 1 })
-		.trim()
-		.custom((value, { req }) => {
-			return Product.findOne({
-				isbn: value,
-				user: req.user._id,
-				_id: { $ne: req.params.id },
-			}).then((product) => {
-				if (product) {
-					return Promise.reject("Product already exist with this ISBN no.");
-				}
-			});
-		}),
+	body("description", "Description must not be empty.").isLength({ min: 1 }).trim(),
+	body("price", "Price must not be empty.").isLength({ min: 1 }).trim(),
 	check("*").escape(),
-	(req, res) => {
+	async (req, res) => {
 		try {
 			const errors = validationResult(req);
-			var product = new Product({
+			var reqProduct = new Product({
 				title: req.body.title,
 				description: req.body.description,
 				isbn: req.body.isbn,
 				_id: req.params.id,
 			});
-
+			const id = req.params.id;
+			const userId = req.user._id;
 			if (!errors.isEmpty()) {
 				return apiResponse.validationErrorWithData(
 					res,
@@ -215,48 +202,27 @@ exports.productUpdate = [
 					errors.array()
 				);
 			} else {
-				if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-					return apiResponse.validationErrorWithData(
+				const product = await Product.findOne(
+					{ _id: id, user: userId },
+				);
+				if (product !== null) {
+					return apiResponse.notFoundResponse(
 						res,
-						"Invalid Error.",
-						"Invalid ID"
+						"Product is not exists"
 					);
 				} else {
-					Product.findById(req.params.id, function (err, foundProduct) {
-						if (foundProduct === null) {
-							return apiResponse.notFoundResponse(
-								res,
-								"Product is not exists"
-							);
-						} else {
-							//Check authorized user
-							if (foundProduct.user.toString() !== req.user._id) {
-								return apiResponse.unauthorizedResponse(
-									res,
-									"You are not authorized to do this operation."
-								);
-							} else {
-								//update product.
-								Product.findByIdAndUpdate(
-									req.params.id,
-									product,
-									{},
-									function (err) {
-										if (err) {
-											return apiResponse.ErrorResponse(res, err);
-										} else {
-											let productData = new ProductData(product);
-											return apiResponse.successResponseWithData(
-												res,
-												"Product update Success.",
-												productData
-											);
-										}
-									}
-								);
-							}
-						}
-					});
+					//update product.
+					const updateProduct = await Product.findByIdAndUpdate(id, reqProduct, {raw: true});
+					if (updateProduct) {
+						let productData = new ProductData(product);
+						return apiResponse.successResponseWithData(
+							res,
+							"Product update Success.",
+							productData
+						);
+					} else {
+						return apiResponse.ErrorResponse(res, err);
+					}
 				}
 			}
 		} catch (err) {
