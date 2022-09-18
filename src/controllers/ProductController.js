@@ -99,6 +99,13 @@ exports.productDetail = async (req, res) => {
 	const id = req.params.id || '';
 	const userId = req.user._id;
 	try {
+		if(id === '') {
+			return apiResponse.validationErrorWithData(
+				res,
+				"Validation Error.",
+				errors.array()
+			);
+		}
 		const product = await Product.findOne(
 			{ _id: id, user: userId },
 			"_id title description isbn createdAt"
@@ -193,9 +200,9 @@ exports.productUpdate = [
 				isbn: req.body.isbn,
 				_id: req.params.id,
 			});
-			const id = req.params.id;
+			const id = req.params.id || '';
 			const userId = req.user._id;
-			if (!errors.isEmpty()) {
+			if (!errors.isEmpty() && id !== '') {
 				return apiResponse.validationErrorWithData(
 					res,
 					"Validation Error.",
@@ -232,54 +239,43 @@ exports.productUpdate = [
 	},
 ];
 
+
 /**
- * Product Delete.
- *
- * @param {string}      id
- *
+ * @description Delete product by id
+ * @param {string} id
  * @returns {Object}
  */
-exports.productDelete = [
-	function (req, res) {
-		if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+exports.productDelete = async (req, res) => {
+	try {
+		const id = req.params.id;
+		const userId = req.user._id;
+		if(id === '') {
 			return apiResponse.validationErrorWithData(
 				res,
-				"Invalid Error.",
-				"Invalid ID"
+				"Validation Error.",
+				errors.array()
 			);
 		}
-		try {
-			Product.findById(req.params.id, function (err, foundProduct) {
-				if (foundProduct === null) {
-					return apiResponse.notFoundResponse(
-						res,
-						"Product is not exists"
-					);
-				} else {
-					//Check authorized user
-					if (foundProduct.user.toString() !== req.user._id) {
-						return apiResponse.unauthorizedResponse(
-							res,
-							"You are not authorized to do this operation."
-						);
-					} else {
-						//delete product.
-						Product.findByIdAndRemove(req.params.id, function (err) {
-							if (err) {
-								return apiResponse.ErrorResponse(res, err);
-							} else {
-								return apiResponse.successResponse(
-									res,
-									"Product delete Success."
-								);
-							}
-						});
-					}
-				}
-			});
-		} catch (err) {
-			//throw error in json response with status 500.
-			return apiResponse.ErrorResponse(res, err);
+		const product = await Product.findOne({ _id: id, user: userId });
+		if (product) {
+			//delete product.
+			const deletedProduct = await Product.findByIdAndRemove(req.params.id)
+			if (deletedProduct) {
+				return apiResponse.successResponse(
+					res,
+					"Product delete Success."
+				);
+			} else {
+				return apiResponse.ErrorResponse(res, err);
+			}
+		} else {
+			return apiResponse.notFoundResponse(
+				res,
+				"Product is not exists"
+			);
 		}
-	},
-];
+	} catch (err) {
+		//throw error in json response with status 500.
+		return apiResponse.ErrorResponse(res, err);
+	}
+};
