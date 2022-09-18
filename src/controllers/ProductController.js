@@ -15,33 +15,32 @@ function ProductData(data) {
 }
 
 /**
- * Product List.
- *
- * @returns {Object}
+ * @description Get all users products with pagination (default limit 10) and sorting
+ * @returns {Array of Objects} List of Products.
  */
-exports.productList = function (req, res) {
+
+exports.productList = async (req, res) => {
 	const userId = req.query.userId || req.user._id;
+	const page = parseInt(req.query.page) || 1;
+	const limit = parseInt(req.query.limit) || 10;
 	try {
-		Product.find({ user: userId }, "_id title description isbn createdAt")
-		// Get only selected fields with populate
-			.populate("user", "firstName lastName firstTimeLogin email _id")
-			.then((products) => {
-				if (products.length > 0) {
-					return apiResponse.successResponseWithData(
-						res,
-						"Operation success",
-						products
-					);
-				} else {
-					return apiResponse.successResponseWithData(
-						res,
-						"Operation success",
-						[]
-					);
-				}
-			}).catch((err) => {
-				return apiResponse.ErrorResponse(res, err);
-			});
+		const products = await Product.find({ user: userId }, "_id title description isbn createdAt")
+		.populate("user", "firstName lastName firstTimeLogin email _id")
+		.sort({ createdAt: -1 })
+		.skip((page - 1) * limit).limit(limit); 
+			if (products.length > 0) {
+				return apiResponse.successResponseWithData(
+					res,
+					"Operation success",
+					products
+				);
+			} else {
+				return apiResponse.successResponseWithData(
+					res,
+					"Operation success",
+					[]
+				);
+			}
 	} catch (err) {
 		//throw error in json response with status 500.
 		return apiResponse.ErrorResponse(res, err);
@@ -49,7 +48,7 @@ exports.productList = function (req, res) {
 };
 
 /**
- * Get all products.
+ * @description Get all products list
  * @param {object} res
  */
 
@@ -60,16 +59,11 @@ exports.getAllProducts = async function (req, res) {
 		const limit = parseInt(req.query.limit) || 10; 
 		const skip = (page - 1) * limit;
 		const query = {};
-		const options = {
-			skip: skip,
-			limit: limit,
-		};
 		const products = await Product.find(query, "_id title description isbn createdAt")
-		// Get only selected fields with populate
 			.populate("user", "firstName lastName firstTimeLogin email _id")
-			.sort(options.sort)
-			.skip(options.skip)
-			.limit(options.limit);
+			.sort(sort)
+			.skip(skip)
+			.limit(limit);
 		const total = await Product.countDocuments();
 		const totalPages = Math.ceil(total / limit);
 		const meta = {
@@ -92,7 +86,6 @@ exports.getAllProducts = async function (req, res) {
 			);
 		}
 	} catch (err) {
-		console.log(err);
 		//throw error in json response with status 500.
 		return apiResponse.ErrorResponse(res, err);
 	}
