@@ -124,40 +124,25 @@ exports.productDetail = async (req, res) => {
 };
 
 /**
- * Product store.
- *
- * @param {string}      title
- * @param {string}      description
- * @param {string}      isbn
- *
+ * @description Add new product
+ * @param {string} title
+ * @param {string} description
+ * @param {integer} price
  * @returns {Object}
  */
 exports.productAdd = [
-	body("title", "Title must not be empty.").isLength({ min: 1 }).trim(),
-	body("description", "Description must not be empty.")
-		.isLength({ min: 1 })
-		.trim(),
-	body("isbn", "ISBN must not be empty")
-		.isLength({ min: 1 })
-		.trim()
-		.custom((value, { req }) => {
-			return Product.findOne({ isbn: value, user: req.user._id }).then(
-				(product) => {
-					if (product) {
-						return Promise.reject("Product already exist with this ISBN no.");
-					}
-				}
-			);
-		}),
+	body("title", "Title is not be empty.").isLength({ min: 1 }).trim(),
+	body("description", "Description is not be empty.").isLength({ min: 1 }).trim(),
+	body("price", "Price is not be empty.").isLength({ min: 1 }).trim(),
 	check("*").escape(),
-	(req, res) => {
+	async  (req, res) => {
 		try {
 			const errors = validationResult(req);
-			var product = new Product({
+			var reqProduct = new Product({
 				title: req.body.title,
 				user: req.user,
-				description: req.body.description,
-				isbn: req.body.isbn,
+				price: req.price,
+				description: req.body.description
 			});
 
 			if (!errors.isEmpty()) {
@@ -168,17 +153,17 @@ exports.productAdd = [
 				);
 			} else {
 				//Save product.
-				product.save(function (err) {
-					if (err) {
-						return apiResponse.ErrorResponse(res, err);
-					}
+				const product = await reqProduct.save();
+				if(product){
 					let productData = new ProductData(product);
 					return apiResponse.successResponseWithData(
 						res,
 						"Product add Success.",
 						productData
 					);
-				});
+				} else	{
+					return apiResponse.ErrorResponse(res, err);
+				}
 			}
 		} catch (err) {
 			//throw error in json response with status 500.
@@ -188,12 +173,9 @@ exports.productAdd = [
 ];
 
 /**
- * Product update.
- *
- * @param {string}      title
- * @param {string}      description
- * @param {string}      isbn
- *
+ * @description Update product by id
+ * @param {string} title
+ * @param {string} description
  * @returns {Object}
  */
 exports.productUpdate = [
