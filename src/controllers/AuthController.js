@@ -20,9 +20,9 @@ const constant = require("../constants/mailTemplate");
  */
 exports.register = [
 	// Validate fields.
-	body("firstName").isLength({ min: 1 }).trim().withMessage("First name must be specified.")
+	body("firstName").isAlpha("en-US", {ignore: " "}).isLength({ min: 1 }).trim().withMessage("First name must be specified.")
 		.isAlphanumeric().withMessage("First name has non-alphanumeric characters."),
-	body("lastName").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
+	body("lastName").isAlpha("en-US", {ignore: " "}).isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
 		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
 	body("email").isLength({ min: 1 }).trim().withMessage("Email must be specified.")
 		.isEmail().withMessage("Email must be a valid email address.").custom((value) => {
@@ -45,7 +45,7 @@ exports.register = [
 	check("email").escape(),
 	check("password").escape(),
 	// Process request after validation and sanitization.
-	(req, res) => {
+	async (req, res) => {
 		try {
 			// Extract the validation errors from a request.
 			const errors = validationResult(req);
@@ -53,17 +53,19 @@ exports.register = [
 				// Display sanitized values/errors messages.
 				return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
 			}else {
+				const { firstName, lastName, email, password } = req.body;
 				//hash input password
-				bcrypt.hash(req.body.password,10,function(err, hash) {
+				const hashPassword = await bcrypt.hash(password,10);
+				if(hashPassword){
 					// generate OTP for confirmation
 					let otp = utility.randomNumber(4);
 					// Create User object with escaped and trimmed data
 					var user = new UserModel(
 						{
-							firstName: req.body.firstName,
-							lastName: req.body.lastName,
-							email: req.body.email,
-							password: hash,
+							firstName: firstName,
+							lastName: lastName,
+							email: email,
+							password: hashPassword,
 							confirmOTP: otp,
 						}
 					);
@@ -71,24 +73,24 @@ exports.register = [
 					let html = constant.otpMailTemplate(otp);
 					// Send confirmation email
 					mailer.send(
-						req.body.email,
+						email,
 						"Confirm Account",
 						html
 					);
-					// INFO: why I commented this? because, mail part is very slow and it will take time to send mail.
-					// .then(function(){
 					// Save user.
-					user.save(function (err) {
-						if (err) { return apiResponse.ErrorResponse(res, err); }
+					const userResponse = await user.save();
+					if (userResponse) {
 						let userData = {
 							_id: user._id,
 							firstName: user.firstName,
 							lastName: user.lastName,
 							email: user.email
 						};
-						return apiResponse.successResponseWithData(res,"Registration Success.", userData);
-					});
-				});
+						return apiResponse.successResponseWithData(res,"Registration Success.", userData); 
+					}else{
+						return apiResponse.ErrorResponse(res, "Registration failed.");
+					}
+				}
 			}
 		} catch (err) {
 			//throw error in json response with status 500.
