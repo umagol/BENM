@@ -27,11 +27,6 @@ var UserSchema = new mongoose.Schema(
 			type: String,
 			required: false,
 		},
-		otpTries: {
-			type: Number,
-			required: false,
-			default: 0,
-		},
 		forgotPasswordId: {
 			type: String,
 			required: false,

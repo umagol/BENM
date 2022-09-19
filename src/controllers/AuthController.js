@@ -9,8 +9,8 @@ const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
 const constant = require("../constants/mailTemplate");
 /**
- * User registration.
- *
+ * 
+ * @description Register user.
  * @param {string}      firstName
  * @param {string}      lastName
  * @param {string}      email
@@ -60,15 +60,13 @@ exports.register = [
 					// generate OTP for confirmation
 					let otp = utility.randomNumber(4);
 					// Create User object with escaped and trimmed data
-					var user = new UserModel(
-						{
-							firstName: firstName,
-							lastName: lastName,
-							email: email,
-							password: hashPassword,
-							confirmOTP: otp,
-						}
-					);
+					var user = new UserModel({
+						firstName: firstName,
+						lastName: lastName,
+						email: email,
+						password: hashPassword,
+						confirmOTP: otp,
+					});
 					// Html email body
 					let html = constant.otpMailTemplate(otp);
 					// Send confirmation email
@@ -163,58 +161,59 @@ exports.login = [
 	}];
 
 /**
- * Verify Confirm otp.
- *
- * @param {string}      email
- * @param {string}      otp
+ * 
+ * @description verify OTP
+ * @param {string} email
+ * @param {Integer} otp
  *
  * @returns {Object}
  */
 exports.verifyConfirm = [
 	body("email").isLength({ min: 1 }).trim().withMessage("Email must be specified.")
 		.isEmail().withMessage("Email must be a valid email address."),
-	body("otp").isLength({ min: 1 }).trim().withMessage("OTP must be specified."),
+	body("otp").isNumeric().isLength({ min: 1 }).trim().withMessage("OTP must be specified."),
 	check("email").escape(),
 	check("otp").escape(),
-	(req, res) => {
+	async (req, res) => {
 		try {
 			const errors = validationResult(req);
 			if (!errors.isEmpty()) {
 				return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
 			}else {
-				var query = {email : req.body.email};
-				UserModel.findOne(query).then(user => {
-					if (user) {
-						//Check already confirm or not.
-						if(!user.isConfirmed){
-							//Check account confirmation.
-							if(user.confirmOTP == req.body.otp){
-								//Update user as confirmed
-								UserModel.findOneAndUpdate(query, {
-									isConfirmed: 1,
-									confirmOTP: null 
-								}).catch(err => {
-									return apiResponse.ErrorResponse(res, err);
-								});
-								// Html email body
-								let html = constant.accountIsConfirmedTemplate(req.body.email, user.firstName, user.lastName);
-								// Send confirmation email
-								mailer.send(
-									req.body.email,
-									"Your Account is Verified",
-									html
-								);
-								return apiResponse.successResponse(res,"Account is verified successfully.");
-							}else{
-								return apiResponse.unauthorizedResponse(res, "Invalid OTP.");
-							}
+				const { email, otp } = req.body;
+				var query = {email : email};
+				const user= await UserModel.findOne(query);
+				if (user) {
+					//Check already confirm or not.
+					if(!user.isConfirmed){
+						//Check account confirmation.
+						if(user.confirmOTP == otp){
+							//Update user as confirmed
+							const updateUserOTPStatus = await UserModel.findOneAndUpdate(query, {
+								isConfirmed: 1,
+								confirmOTP: null 
+							});
+							if(!updateUserOTPStatus){
+								return apiResponse.ErrorResponse(res, "Error in update user.");
+							}							
+							// Html email body
+							let html = constant.accountIsConfirmedTemplate(email, user.firstName, user.lastName);
+							// Send confirmation email
+							mailer.send(
+								email,
+								"Your Account is Verified",
+								html
+							);
+							return apiResponse.successResponse(res,"Account is verified successfully.");
 						}else{
-							return apiResponse.unauthorizedResponse(res, "Account is already verified.");
+							return apiResponse.unauthorizedResponse(res, "Invalid OTP.");
 						}
 					}else{
-						return apiResponse.unauthorizedResponse(res, "email not found.");
+						return apiResponse.unauthorizedResponse(res, "Account is already verified.");
 					}
-				});
+				}else{
+					return apiResponse.unauthorizedResponse(res, "email not found.");
+				}
 			}
 		} catch (err) {
 			return apiResponse.ErrorResponse(res, err);
