@@ -1,5 +1,4 @@
 const crypto = require("crypto"); // Added in: node v14.17.0
-// var base64url = require('base64url');
 
 exports.randomNumber = function (length) {
 	var text = "";
