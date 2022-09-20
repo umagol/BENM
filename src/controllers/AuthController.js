@@ -9,20 +9,20 @@ const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
 const constant = require("../constants/mailTemplate");
 /**
- * User registration.
- *
- * @param {string}      firstName
- * @param {string}      lastName
- * @param {string}      email
- * @param {string}      password
+ * 
+ * @description Register user.
+ * @param {string} firstName
+ * @param {string} lastName
+ * @param {string} email
+ * @param {string} password
  *
  * @returns {Object}
  */
 exports.register = [
 	// Validate fields.
-	body("firstName").isLength({ min: 1 }).trim().withMessage("First name must be specified.")
+	body("firstName").isAlpha("en-US", {ignore: " "}).isLength({ min: 1 }).trim().withMessage("First name must be specified.")
 		.isAlphanumeric().withMessage("First name has non-alphanumeric characters."),
-	body("lastName").isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
+	body("lastName").isAlpha("en-US", {ignore: " "}).isLength({ min: 1 }).trim().withMessage("Last name must be specified.")
 		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
 	body("email").isLength({ min: 1 }).trim().withMessage("Email must be specified.")
 		.isEmail().withMessage("Email must be a valid email address.").custom((value) => {
@@ -45,7 +45,7 @@ exports.register = [
 	check("email").escape(),
 	check("password").escape(),
 	// Process request after validation and sanitization.
-	(req, res) => {
+	async (req, res) => {
 		try {
 			// Extract the validation errors from a request.
 			const errors = validationResult(req);
@@ -53,42 +53,42 @@ exports.register = [
 				// Display sanitized values/errors messages.
 				return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
 			}else {
+				const { firstName, lastName, email, password } = req.body;
 				//hash input password
-				bcrypt.hash(req.body.password,10,function(err, hash) {
+				const hashPassword = await bcrypt.hash(password,10);
+				if(hashPassword){
 					// generate OTP for confirmation
 					let otp = utility.randomNumber(4);
 					// Create User object with escaped and trimmed data
-					var user = new UserModel(
-						{
-							firstName: req.body.firstName,
-							lastName: req.body.lastName,
-							email: req.body.email,
-							password: hash,
-							confirmOTP: otp,
-						}
-					);
+					var user = new UserModel({
+						firstName: firstName,
+						lastName: lastName,
+						email: email,
+						password: hashPassword,
+						confirmOTP: otp,
+					});
 					// Html email body
 					let html = constant.otpMailTemplate(otp);
 					// Send confirmation email
 					mailer.send(
-						req.body.email,
+						email,
 						"Confirm Account",
 						html
 					);
-					// INFO: why I commented this? because, mail part is very slow and it will take time to send mail.
-					// .then(function(){
 					// Save user.
-					user.save(function (err) {
-						if (err) { return apiResponse.ErrorResponse(res, err); }
+					const userResponse = await user.save();
+					if (userResponse) {
 						let userData = {
 							_id: user._id,
 							firstName: user.firstName,
 							lastName: user.lastName,
 							email: user.email
 						};
-						return apiResponse.successResponseWithData(res,"Registration Success.", userData);
-					});
-				});
+						return apiResponse.successResponseWithData(res,"Registration Success.", userData); 
+					}else{
+						return apiResponse.ErrorResponse(res, "Registration failed.");
+					}
+				}
 			}
 		} catch (err) {
 			//throw error in json response with status 500.
@@ -110,50 +110,49 @@ exports.login = [
 	body("password").isLength({ min: 1 }).trim().withMessage("Password must be specified."),
 	check("email").escape(),
 	check("password").escape(),
-	(req, res) => {
+	async (req, res) => {
 		try {
 			const errors = validationResult(req);
 			if (!errors.isEmpty()) {
 				return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
 			}else {
-				UserModel.findOne({email : req.body.email}).then(user => {
-					if (user) {
-						//Compare given password with db's hash.
-						bcrypt.compare(req.body.password,user.password,function (err,same) {
-							if(same){
-								//Check account confirmation.
-								if(user.isConfirmed){
-									// Check User's account active or not.
-									if(user.status) {
-										let userData = {
-											_id: user._id,
-											firstName: user.firstName,
-											lastName: user.lastName,
-											email: user.email,
-										};
-										//Prepare JWT token for authentication
-										const jwtPayload = userData;
-										const jwtData = {
-											expiresIn: process.env.JWT_TIMEOUT_DURATION,
-										};
-										const secret = process.env.JWT_SECRET;
-										//Generated JWT token with Payload and secret.
-										userData.token = jwt.sign(jwtPayload, secret, jwtData);
-										return apiResponse.successResponseWithData(res,"Login Success.", userData);
-									}else {
-										return apiResponse.unauthorizedResponse(res, "Account is not active. Please contact admin.");
-									}
-								}else{
-									return apiResponse.unauthorizedResponse(res, "Account is not verified. Please verified your account.");
-								}
-							}else{
-								return apiResponse.unauthorizedResponse(res, "Email or Password wrong.");
+				const user = await UserModel.findOne({email : req.body.email});
+				if (user) {
+					//Compare given password with db's hash.
+					const verifyPassword = await bcrypt.compare(req.body.password,user.password);
+					console.log(verifyPassword);
+					if(verifyPassword){
+						//Check account confirmation.
+						if(user.isConfirmed){
+							// Check User's account active or not.
+							if(user.status) {
+								let userData = {
+									_id: user._id,
+									firstName: user.firstName,
+									lastName: user.lastName,
+									email: user.email,
+								};
+								//Prepare JWT token for authentication
+								const jwtPayload = userData;
+								const jwtData = {
+									expiresIn: process.env.JWT_TIMEOUT_DURATION,
+								};
+								const secret = process.env.JWT_SECRET;
+								//Generated JWT token with Payload and secret.
+								userData.token = await jwt.sign(jwtPayload, secret, jwtData);
+								return apiResponse.successResponseWithData(res,"Login Success.", userData);
+							}else {
+								return apiResponse.unauthorizedResponse(res, "Account is not active.");
 							}
-						});
+						}else{
+							return apiResponse.unauthorizedResponse(res, "Account is not verified. Please verified your account.");
+						}
 					}else{
 						return apiResponse.unauthorizedResponse(res, "Email or Password wrong.");
 					}
-				});
+				}else{
+					return apiResponse.unauthorizedResponse(res, "Email or Password wrong.");
+				}
 			}
 		} catch (err) {
 			return apiResponse.ErrorResponse(res, err);
@@ -161,58 +160,59 @@ exports.login = [
 	}];
 
 /**
- * Verify Confirm otp.
- *
- * @param {string}      email
- * @param {string}      otp
+ * 
+ * @description verify OTP
+ * @param {string} email
+ * @param {Integer} otp
  *
  * @returns {Object}
  */
 exports.verifyConfirm = [
 	body("email").isLength({ min: 1 }).trim().withMessage("Email must be specified.")
 		.isEmail().withMessage("Email must be a valid email address."),
-	body("otp").isLength({ min: 1 }).trim().withMessage("OTP must be specified."),
+	body("otp").isNumeric().isLength({ min: 1 }).trim().withMessage("OTP must be specified."),
 	check("email").escape(),
 	check("otp").escape(),
-	(req, res) => {
+	async (req, res) => {
 		try {
 			const errors = validationResult(req);
 			if (!errors.isEmpty()) {
 				return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
 			}else {
-				var query = {email : req.body.email};
-				UserModel.findOne(query).then(user => {
-					if (user) {
-						//Check already confirm or not.
-						if(!user.isConfirmed){
-							//Check account confirmation.
-							if(user.confirmOTP == req.body.otp){
-								//Update user as confirmed
-								UserModel.findOneAndUpdate(query, {
-									isConfirmed: 1,
-									confirmOTP: null 
-								}).catch(err => {
-									return apiResponse.ErrorResponse(res, err);
-								});
-								// Html email body
-								let html = constant.accountIsConfirmedTemplate(req.body.email, user.firstName, user.lastName);
-								// Send confirmation email
-								mailer.send(
-									req.body.email,
-									"Your Account is Verified",
-									html
-								);
-								return apiResponse.successResponse(res,"Account is verified successfully.");
-							}else{
-								return apiResponse.unauthorizedResponse(res, "Invalid OTP.");
-							}
+				const { email, otp } = req.body;
+				var query = {email : email};
+				const user= await UserModel.findOne(query);
+				if (user) {
+					//Check already confirm or not.
+					if(!user.isConfirmed){
+						//Check account confirmation.
+						if(user.confirmOTP == otp){
+							//Update user as confirmed
+							const updateUserOTPStatus = await UserModel.findOneAndUpdate(query, {
+								isConfirmed: 1,
+								confirmOTP: null 
+							});
+							if(!updateUserOTPStatus){
+								return apiResponse.ErrorResponse(res, "Error in update user.");
+							}							
+							// Html email body
+							let html = constant.accountIsConfirmedTemplate(email, user.firstName, user.lastName);
+							// Send confirmation email
+							mailer.send(
+								email,
+								"Your Account is Verified",
+								html
+							);
+							return apiResponse.successResponse(res,"Account is verified successfully.");
 						}else{
-							return apiResponse.unauthorizedResponse(res, "Account is already verified.");
+							return apiResponse.unauthorizedResponse(res, "Invalid OTP.");
 						}
 					}else{
-						return apiResponse.unauthorizedResponse(res, "email not found.");
+						return apiResponse.unauthorizedResponse(res, "Account is already verified.");
 					}
-				});
+				}else{
+					return apiResponse.unauthorizedResponse(res, "email not found.");
+				}
 			}
 		} catch (err) {
 			return apiResponse.ErrorResponse(res, err);

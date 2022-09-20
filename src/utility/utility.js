@@ -1,7 +1,6 @@
 const crypto = require("crypto"); // Added in: node v14.17.0
-// var base64url = require('base64url');
 
-exports.randomNumber = function (length) {
+exports.randomNumber =  (length = 4) => {
 	var text = "";
 	var possible = "123456789";
 	for (var i = 0; i < length; i++) {
@@ -11,6 +10,6 @@ exports.randomNumber = function (length) {
 	return Number(text);
 };
 
-exports.createUUID = function () {
+exports.createUUID = () => {
 	return crypto.randomBytes(10).toString("hex");
 };
