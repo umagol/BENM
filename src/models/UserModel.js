@@ -30,12 +30,8 @@ var UserSchema = new mongoose.Schema(
 		forgotPasswordId: {
 			type: String,
 			required: false,
+			default: null,
 		},
-		firstTimeLogin: {
-			type: Number,
-			required: false,
-			default: 1,
-		}, // 0: first time login is done  1: first time login
 		status: {
 			type: Boolean,
 			required: true,
