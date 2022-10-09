@@ -56,51 +56,46 @@ exports.register = [
 				const { firstName, lastName, email, password } = req.body;
 				//hash input password
 				const hashPassword = await bcrypt.hash(password,10);
-				if(hashPassword){
-					// generate OTP for confirmation
-					let otp = utility.randomNumber(4);
-					// Create User object with escaped and trimmed data
-					var user = new UserModel({
-						firstName: firstName,
-						lastName: lastName,
-						email: email,
-						password: hashPassword,
-						confirmOTP: otp,
-					});
-					// Html email body
-					let html = constant.otpMailTemplate(otp);
-					// Send confirmation email
-					mailer.send(
-						email,
-						"Confirm Account",
-						html
-					);
-					// Save user.
-					const userResponse = await user.save();
-					if (userResponse) {
-						let userData = {
-							_id: user._id,
-							firstName: user.firstName,
-							lastName: user.lastName,
-							email: user.email
-						};
-						return apiResponse.successResponseWithData(res,"Registration Success.", userData); 
-					}else{
-						return apiResponse.ErrorResponse(res, "Registration failed.");
-					}
-				}
+				// generate OTP for confirmation
+				let otp = utility.randomNumber(4);
+				// Create User object with escaped and trimmed data
+				var user = new UserModel({
+					firstName: firstName,
+					lastName: lastName,
+					email: email,
+					password: hashPassword,
+					confirmOTP: otp,
+				});
+				// Html email body
+				let html = constant.otpMailTemplate(otp);
+				// Send confirmation email
+				mailer.send(
+					email,
+					"Confirm Account",
+					html
+				);
+				// Save user.
+				await user.save();
+				let userData = {
+					_id: user._id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					email: user.email
+				};
+				return apiResponse.successResponseWithData(res,"Registration Success.", userData); 
 			}
-		} catch (err) {
+		} catch (error) {
+			console.log(error);
 			//throw error in json response with status 500.
-			return apiResponse.ErrorResponse(res, err);
+			return apiResponse.ErrorResponse(res, error.message);
 		}
 	}];
 
 /**
- * User login.
- *
- * @param {string}      email
- * @param {string}      password
+ * 
+ * @description User login.
+ * @param {string} email
+ * @param {string} password
  *
  * @returns {Object}
  */
@@ -118,44 +113,39 @@ exports.login = [
 			}else {
 				const user = await UserModel.findOne({email : req.body.email});
 				if (user) {
+					//Check account confirmation.
+					if(user.isConfirmed && user.status){
 					//Compare given password with db's hash.
-					const verifyPassword = await bcrypt.compare(req.body.password,user.password);
-					console.log(verifyPassword);
-					if(verifyPassword){
-						//Check account confirmation.
-						if(user.isConfirmed){
+						const verifyPassword = await bcrypt.compare(req.body.password,user.password);
+						if(verifyPassword){
 							// Check User's account active or not.
-							if(user.status) {
-								let userData = {
-									_id: user._id,
-									firstName: user.firstName,
-									lastName: user.lastName,
-									email: user.email,
-								};
-								//Prepare JWT token for authentication
-								const jwtPayload = userData;
-								const jwtData = {
-									expiresIn: process.env.JWT_TIMEOUT_DURATION,
-								};
-								const secret = process.env.JWT_SECRET;
-								//Generated JWT token with Payload and secret.
-								userData.token = await jwt.sign(jwtPayload, secret, jwtData);
-								return apiResponse.successResponseWithData(res,"Login Success.", userData);
-							}else {
-								return apiResponse.unauthorizedResponse(res, "Account is not active.");
-							}
-						}else{
-							return apiResponse.unauthorizedResponse(res, "Account is not verified. Please verified your account.");
+							let userData = {
+								_id: user._id,
+								firstName: user.firstName,
+								lastName: user.lastName,
+								email: user.email,
+							};
+							//Prepare JWT token for authentication
+							const jwtPayload = userData;
+							const jwtData = {
+								expiresIn: process.env.JWT_TIMEOUT_DURATION,
+							};
+							const secret = process.env.JWT_SECRET;
+							//Generated JWT token with Payload and secret.
+							userData.token = await jwt.sign(jwtPayload, secret, jwtData);
+							return apiResponse.successResponseWithData(res,"Login Success.", userData);
+						} else {
+							return apiResponse.unauthorizedResponse(res, "Email or Password wrong.");
 						}
 					}else{
-						return apiResponse.unauthorizedResponse(res, "Email or Password wrong.");
+						return apiResponse.unauthorizedResponse(res, "Account is not verified. Please verified your account.");
 					}
 				}else{
 					return apiResponse.unauthorizedResponse(res, "Email or Password wrong.");
 				}
 			}
-		} catch (err) {
-			return apiResponse.ErrorResponse(res, err);
+		} catch (error) {
+			return apiResponse.ErrorResponse(res, error.message);
 		}
 	}];
 
@@ -167,10 +157,10 @@ exports.login = [
  *
  * @returns {Object}
  */
-exports.verifyConfirm = [
+exports.verifyAccount = [
 	body("email").isLength({ min: 1 }).trim().withMessage("Email must be specified.")
 		.isEmail().withMessage("Email must be a valid email address."),
-	body("otp").isNumeric().isLength({ min: 1 }).trim().withMessage("OTP must be specified."),
+	body("otp").isNumeric().isLength({ min: 4 }).trim().withMessage("OTP must be specified."),
 	check("email").escape(),
 	check("otp").escape(),
 	async (req, res) => {
@@ -220,111 +210,104 @@ exports.verifyConfirm = [
 	}];
 
 /**
- * Resend Confirm otp.
- *
+ * 
+ * @description Resend verification OTP.
  * @param {string} email
- *
+ * 
  * @returns {Object}
  */
-exports.resendConfirmOtp = [
+exports.resendVerificationOtp = [
 	body("email").isLength({ min: 1 }).trim().withMessage("Email must be specified.")
 		.isEmail().withMessage("Email must be a valid email address."),
 	check("email").escape(),
-	(req, res) => {
+	async (req, res) => {
 		try {
 			const errors = validationResult(req);
 			if (!errors.isEmpty()) {
 				return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
 			}else {
-				var query = {email : req.body.email};
-				UserModel.findOne(query).then(user => {
-					if (user) {
-						//Check already confirm or not.
-						if(!user.isConfirmed){
-							// Generate otp
-							let otp = utility.randomNumber(4);
-							// Html email body
-							let html = constant.otpMailTemplate(otp);
-							// Send confirmation email
-							mailer.send(
-								req.body.email,
-								"Confirm Account",
-								html
-							).then(function(){
-
-								user.isConfirmed = 0;
-								user.confirmOTP = otp;
-								// Save user.
-								user.save(function (err) {
-									if (err) { return apiResponse.ErrorResponse(res, err); }
-									return apiResponse.successResponse(res,"Confirm otp sent.");
-								});
-							});
-						}else{
-							return apiResponse.unauthorizedResponse(res, "Account already confirmed.");
-						}
+				const user = await UserModel.findOne({email : req.body.email});
+				if (user) {
+					//Check already confirm or not.
+					if(!user.isConfirmed){
+						// Generate otp
+						let otp = utility.randomNumber(4);
+						// Html email body
+						let html = constant.otpMailTemplate(otp);
+						// Send confirmation email
+						await mailer.send(
+							req.body.email,
+							"Confirm Account",
+							html
+						);
+						// Update otp
+						user.confirmOTP = otp;
+						// Save user.
+						await user.save();
+						return apiResponse.successResponse(res,"new OTP sent.");
 					}else{
-						return apiResponse.unauthorizedResponse(res, "Specified email not found.");
+						return apiResponse.unauthorizedResponse(res, "Account already confirmed.");
 					}
-				});
+				}else{
+					return apiResponse.unauthorizedResponse(res, "Specified email not found.");
+				}
 			}
-		} catch (err) {
-			return apiResponse.ErrorResponse(res, err);
+		} catch (error) {
+			return apiResponse.ErrorResponse(res, error.message);
 		}
 	}];
 
 /**
- * Forgot Password.
  * 
+ * @description Forgot Password.
  * @param {string} email
- *
+ * 
  * @returns {Object}
  */
 exports.forgotPassword = [
 	body("email").isLength({ min: 1 }).trim().withMessage("Email must be specified.")
 		.isEmail().withMessage("Email must be a valid email address."),
 	check("email").escape(),
-	(req, res) => {
+	async (req, res) => {
 		try {
 			const errors = validationResult(req);
 			if (!errors.isEmpty()) {
 				return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
 			}else {
-				var query = {email : req.body.email};
-				UserModel.findOne(query).then(user => {
-					if (user) {
-						// Generate otp
-						let ForgotPasswordUUID = utility.createUUID();
-						var host = req.get("host");
-						const link = req.protocol+"://"+host+"/auth/reset-password/"+ForgotPasswordUUID+"/"+user._id;
-						// Html email body
-						let html = constant.forgotPasswordMailTemplate(link);
-						// Send confirmation email
-						mailer.send(
-							req.body.email,
-							"Forgot Password",
-							html
-						).then(function(){
-							user.forgotPasswordId = ForgotPasswordUUID;
-							// Save user.
-							user.save(function (err) {
-								if (err) { return apiResponse.ErrorResponse(res, err); }
-								return apiResponse.successResponse(res,"Forgot Password Link Sent.");
-							});
-						});
-					}else{
-						return apiResponse.unauthorizedResponse(res, "Email not found.");
-					}
-				});
+				const user = await UserModel.findOne({email : req.body.email});
+				if (user) {
+					// Generate otp
+					let ForgotPasswordUUID =  await utility.createUUID();
+					var host = req.get("host");
+					const link = req.protocol+"://"+host+"/auth/reset-password/"+ForgotPasswordUUID+"/"+user._id;
+					// Html email body
+					let html = constant.forgotPasswordMailTemplate(link, user.firstName);
+					// Send confirmation email
+					await mailer.send(
+						req.body.email,
+						"Forgot Password",
+						html
+					);
+					user.forgotPasswordId = ForgotPasswordUUID;
+					// Save user.
+					await user.save();
+					return apiResponse.successResponse(res,"Forgot Password Link Sent.");
+				}else{
+					return apiResponse.unauthorizedResponse(res, "Email not found.");
+				}
 			}
-		} catch (err) {
-			return apiResponse.ErrorResponse(res, err);
+		} catch (error) {
+			return apiResponse.ErrorResponse(res, error.message);
 		}
 	}
 ];
 /**
- * Reset Password.
+ * @description Reset Password.
+ * @param {string} password
+ * @param {string} confirmPassword
+ * @param {string} forgotPasswordId
  * 
+ * @returns {Object}
  */
 exports.resetPassword = [
 	body("password").isLength({ min: 1 }).trim().withMessage("Password must be specified.")
@@ -336,36 +319,35 @@ exports.resetPassword = [
 			}
 			return value;
 		}),
+	body("uuid").isLength({ min: 1 }).trim().withMessage("id must be specified.")
+		.isLength({ min: 6 }).withMessage("id is invalid"),
+	body("userId").isLength({ min: 1 }).trim().withMessage("id must be specified.")
+		.isLength({ min: 6 }).withMessage("userId is invalid"),
 	check("password").escape(),
 	check("confirmPassword").escape(),
-	(req, res) => {
+	check("uuid").escape(),
+	check("userId").escape(),
+	async (req, res) => {
 		try {
 			const errors = validationResult(req);
 			if (!errors.isEmpty()) {
 				return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
 			}else {
-				var query = {
-					_id : req.body.id,
-					forgotPasswordId : req.body.token
-				};
-				UserModel.findOne(query).then(user => {
-					if (user) {
-						bcrypt.hash(req.body.password,10,function(err, hash) {
-							user.password = hash;
-							user.forgotPasswordId = "";
-							// Save user.
-							user.save(function (err) {
-								if (err) { return apiResponse.ErrorResponse(res, err); }
-								return apiResponse.successResponse(res,"Password reset successfully.");
-							});
-						});
-					}else{
-						return apiResponse.unauthorizedResponse(res, "Link is invalid, Please try with valid link.");
-					}
-				});
+				const { password, uuid, userId } = req.body;
+				const user = await UserModel.findOne({forgotPasswordId : uuid, _id: userId});
+				if (user) {
+					const hashPassword = await bcrypt.hash(password,10);
+					user.password = hashPassword;
+					user.forgotPasswordId = null;
+					// Save user.
+					await user.save();
+					return apiResponse.successResponse(res,"Password reset successfully.");
+				}else{
+					return apiResponse.unauthorizedResponse(res, "Link is invalid, Please try with valid link.");
+				}
 			}
-		} catch (err) {
-			return apiResponse.ErrorResponse(res, err);
+		} catch (error) {
+			return apiResponse.ErrorResponse(res, error.message);
 		}
 	}
 ];

@@ -3,7 +3,7 @@ var authRouter = require("./auth");
 const PrivateRouter = require("./privateRouter");
 const PublicRouter = require("./publicRouter");
 var app = express();
-const authMiddleware = require("../middlewares/jwt");
+const authMiddleware = require("../middleware/jwt");
 
 app.use("/auth/", authRouter);
 app.use("/pub/", PublicRouter);
