@@ -66,7 +66,7 @@ exports.accountIsConfirmedTemplate = (email, firstName, lastName) => {
 </html>`;
 };
 
-exports.forgotPasswordMailTemplate = (link) => {
+exports.forgotPasswordMailTemplate = (link, name) => {
 	return `
 	<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 	<head>
@@ -81,7 +81,7 @@ exports.forgotPasswordMailTemplate = (link) => {
         <div class="row">
             <div class="col-12">
                 <h1>Forgot Password</h1>
-                <p>Hi {{name}},</p>
+                <p>Hi ${name},</p>
                 <p>Someone requested a password reset for your account. If it was you, click the button below to reset your password. If it wasn't you, you can safely ignore this email.</p>
                 <a href="${link}" class="btn btn-primary">Reset Password</a>
 

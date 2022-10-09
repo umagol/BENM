@@ -23,7 +23,7 @@ exports.productList = async (req, res) => {
 	const limit = parseInt(req.query.limit) || 10;
 	try {
 		const products = await Product.find({ user: userId }, "_id title description isbn createdAt")
-			.populate("user", "firstName lastName firstTimeLogin email _id")
+			.populate("user", "firstName lastName email _id")
 			.sort({ createdAt: -1 })
 			.skip((page - 1) * limit).limit(limit); 
 		if (products.length > 0) {
@@ -59,7 +59,7 @@ exports.getAllProducts = async (req, res) => {
 		const sort = req.query.sort || "createdAt";
 		const query = {};
 		const products = await Product.find(query, "_id title description isbn createdAt")
-			.populate("user", "firstName lastName firstTimeLogin email _id")
+			.populate("user", "firstName lastName email _id")
 			.sort(sort)
 			.skip(skip)
 			.limit(limit);
