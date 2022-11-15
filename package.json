@@ -1,7 +1,7 @@
 {
   "name": "create-benm-app",
   "description": "Boilerplate for REST API with Node.js, ExpressJS, and MongoDB",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "version_short": "0.1",
   "license": "MIT",
   "homepage": "https://umagol.github.io/BENM",
@@ -28,6 +28,9 @@
     "start": "node ./src/bin/www",
     "dev": "nodemon ./src/bin/www",
     "build": "npm install",
+    "start:docker": "docker compose up --build -d",
+    "build:docker": "docker build -t benm-app .",
+    "start:docker-image": "docker run -d -p 8000:8000 benm-app",
     "test": "nyc _mocha --timeout 10000 --exit --report lcovonly -- -R spec",
     "lint": "eslint --fix --config .eslintrc.json \"**/*.js\""
   },

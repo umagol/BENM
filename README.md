@@ -140,6 +140,24 @@ Press CTRL + C to stop the process.
 
 **Note:** Update your MongoDB connection string in `.env` file.
 
+
+## Run application using docker 
+### Run docker using compose file (recommended)
+
+```bash
+npm run start:docker
+```
+### Build docker image
+```bash
+npm run build:docker
+```
+### Run docker image container
+```bash
+npm run start:docker-image
+```
+
+<small>**Note:** into the docker-compose.yml file update your local configuration. and install docker in your system.</small>
+
 ### **Creating new controllers**
 
 If you need to add more controllers to the project just create a new file in `/src/controllers/` and use them in the routes.

@@ -1,0 +1,19 @@
+version: '3.4'
+services:
+  benm-app:
+    container_name: benm-app
+    restart: always
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000"
+    env_file:
+      - .env
+    network_mode: 
+      "host"
+    volumes:
+      - ./:/usr/local/apps/benm-app/dev
+      - ignore:/usr/local/apps/bemm-app/dev/node_modules/
+volumes:
+  ignore:
